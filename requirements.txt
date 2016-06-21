@@ -1,0 +1,4 @@
+Django==1.8.13
+feedparser==5.2.1
+redis==2.10.5
+pyquery==1.2.13

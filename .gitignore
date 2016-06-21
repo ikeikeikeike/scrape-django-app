@@ -87,3 +87,8 @@ ENV/
 
 # Rope project settings
 .ropeproject
+
+# for django
+settings_local.py
+*.sqlite3
+tags
