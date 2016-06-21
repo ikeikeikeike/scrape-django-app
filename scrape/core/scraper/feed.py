@@ -22,9 +22,11 @@ class Scrape(object):
         return safe(self.feed, 'bozo') == 0
 
     def title(self):
+        # TODO: Feezy get the html's title tag by pyquery when if not exists.
         return safe(self.feed, 'feed', 'title')
 
     def description(self):
+        # TODO: Feezy get the html's description tag by pyquery when if not exists.
         return safe(self.feed, 'feed', 'subtitle')
 
     def entries(self):
@@ -43,16 +45,21 @@ class Item(object):
         return str(self.item)
 
     def title(self):
+        # TODO: Feezy get the html's title tag by pyquery when if not exists.
         return safe(self.item, 'title')
 
     def description(self):
+        # TODO: Feezy get the html's description tag by pyquery when if not exists.
         return safe(self.item, 'summary')
 
     def tags(self):
+        # TODO: Feezy get the html's keywords tag by pyquery when if not exists.
         tags = safe(self.item, 'tags')
         return tags and [safe(t['term']) for t in tags]
 
     def image(self):
+        # TODO: Feezy get the contains image in html by pyquery when if not exists.
+
         # 'links': [{'href': 'http://example.com.jpg', 'rel': 'enclosure'}]
         # 'media_content': [{'url': 'http://example.com.jpg'}],
         # 'image_item': {'rdf:about': 'http://example.com.jpg'},
