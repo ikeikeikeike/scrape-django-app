@@ -4,8 +4,8 @@ from django.utils.html import strip_tags
 def safe(feed, *attrs):
     try:
         for attr in attrs:
-            feed = getattr(feed, attr)
-    except AttributeError:
+            feed = feed[attr]
+    except KeyError:
         return
 
     if isinstance(feed, str):

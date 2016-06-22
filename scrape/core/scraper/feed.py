@@ -1,5 +1,7 @@
 import feedparser
+from pyquery import PyQuery as pq
 
+from core import uri
 from core.elements import safe
 
 
@@ -29,6 +31,12 @@ class Scrape(object):
         # TODO: Feezy get the html's description tag by pyquery when if not exists.
         return safe(self.feed, 'feed', 'subtitle')
 
+    def image(self):
+        # TODO: Feezy get the contains image in html by pyquery when if not exists.
+
+        # some pattern
+        return
+
     def entries(self):
         return safe(self.feed, 'entries')
 
@@ -57,11 +65,36 @@ class Item(object):
         tags = safe(self.item, 'tags')
         return tags and [safe(t['term']) for t in tags]
 
-    def image(self):
-        # TODO: Feezy get the contains image in html by pyquery when if not exists.
+    def images(self):
+        """
+        - links: [{'href': 'http://example.com.jpg', 'rel': 'enclosure'}]
+        - media_content: [{'url': 'http://example.com.jpg'}],
+        - image_item: {'rdf:about': 'http://example.com.jpg'},
+        - content: [{'value': '<span>egg</span><img src="http://example.com
+                    .jpg" /><div><img src="http://example.ssjpg" /></div>'}]
+        - Finally, feezy get the contains image in html when if not exists.
+        """
 
-        # 'links': [{'href': 'http://example.com.jpg', 'rel': 'enclosure'}]
-        # 'media_content': [{'url': 'http://example.com.jpg'}],
-        # 'image_item': {'rdf:about': 'http://example.com.jpg'},
-        # 'content': [{'value': '<span>egg</span><img src="http://example.com.jpg" />'}]
-        return
+        imgs = set()
+
+        elms = safe(self.item, 'links') or []
+        imgs |= set([elm.get('href') for elm in elms])
+
+        elms = safe(self.item, 'media_content') or []
+        imgs |= set([elm['url'] for elm in elms])
+
+        url = safe(self.item, 'image_item', 'rdf:about')
+        imgs |= set([url])
+
+        elms = safe(self.item, 'content') or []
+        doc = set([elm['value'] for elm in elms])
+
+        doc = pq(''.join(map(str, doc)) or None)
+        imgs |= set([i.attrib['src'] for i in doc('img')])
+
+        if not any(imgs):
+            # TODO: Request page
+            pass
+
+        allow = ['.jpg', '.jpeg', '.gif', '.png', '.bmp']
+        return [i for i in imgs if uri.uriext(i) in allow]
