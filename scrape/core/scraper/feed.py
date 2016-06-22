@@ -4,6 +4,12 @@ from pyquery import PyQuery as pq
 from core import uri
 from core.elements import safe
 
+# Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:47.0) Gecko/20100101 Firefox/47.0
+feedparser.USER_AGENT = (
+    'Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 '
+    '(KHTML, like Gecko) Chrome/51.0.2704.103 Safari/537.36'
+)
+
 
 class Scrape(object):
     def __init__(self, url):
