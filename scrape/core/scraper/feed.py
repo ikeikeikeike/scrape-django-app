@@ -1,14 +1,20 @@
+import re
+
+from django.conf import settings
+from django.utils.html import strip_tags
+
+import requests
 import feedparser
 from pyquery import PyQuery as pq
 
 from core import uri
+from core import client
 from core.elements import safe
 
 
-feedparser.USER_AGENT = (  # Force assign(patch)
-    'Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 '
-    '(KHTML, like Gecko) Chrome/51.0.2704.103 Safari/537.36'
-)
+wptn = re.compile(r'\w')
+requests.adapters.DEFAULT_RETRIES = 5  # Force assign(patch)
+feedparser.USER_AGENT = settings.USER_AGENT['chrome']  # Force assign(patch)
 
 
 class Scrape(object):
@@ -30,16 +36,27 @@ class Scrape(object):
         return safe(self.feed, 'bozo') == 0
 
     def title(self):
-        # TODO: Feezy get the html's title tag by pyquery when if not exists.
-        return safe(self.feed, 'feed', 'title')
+        f = safe(self.feed, 'feed')
+        s = safe(f, 'title')
+
+        if not wptn.match(s):
+            doc = pq(client.html(safe(f, 'link')) or None)
+            s = doc('title').text()
+
+        return s and strip_tags(s.strip())
 
     def description(self):
-        # TODO: Feezy get the html's description tag by pyquery when if not exists.
-        return safe(self.feed, 'feed', 'subtitle')
+        f = safe(self.feed, 'feed')
+        s = safe(f, 'subtitle')
+
+        if not wptn.match(s):
+            doc = pq(client.html(safe(f, 'link')) or None)
+            s = doc('meta[name="description"]').attr('content')
+
+        return s and strip_tags(s.strip())
 
     def image(self):
         # TODO: Feezy get the contains image in html by pyquery when if not exists.
-
         # some pattern
         return
 
@@ -59,17 +76,31 @@ class Item(object):
         return str(self.item)
 
     def title(self):
-        # TODO: Feezy get the html's title tag by pyquery when if not exists.
-        return safe(self.item, 'title')
+        s = safe(self.item, 'title')
+        if not wptn.match(s):
+            doc = pq(client.html(self.item['id']) or None)
+            s = doc('title').text()
+
+        return s and strip_tags(s.strip())
 
     def description(self):
-        # TODO: Feezy get the html's description tag by pyquery when if not exists.
-        return safe(self.item, 'summary')
+        s = safe(self.item, 'summary')
+        if not wptn.match(s):
+            doc = pq(client.html(self.item['id']) or None)
+            s = doc('meta[name="description"]').attr('content')
+
+        return s and strip_tags(s.strip())
 
     def tags(self):
-        # TODO: Feezy get the html's keywords tag by pyquery when if not exists.
-        tags = safe(self.item, 'tags')
-        return tags and [safe(t['term']) for t in tags]
+        t = safe(self.item, 'tags')
+        t = t and [safe(s['term']) for s in t]
+
+        if not t:
+            doc = pq(client.html(self.item['id']) or None)
+            t = doc('meta[name="keywords"]').attr('content')
+            t = t and t.split(',')
+
+        return t
 
     def images(self):
         """
@@ -78,6 +109,7 @@ class Item(object):
         - image_item: {'rdf:about': 'http://example.com.jpg'},
         - content: [{'value': '<span>egg</span><img src="http://example.com
                     .jpg" /><div><img src="http://example.ssjpg" /></div>'}]
+        - summary: '<img src="http://example.ssjpg" /></div>'
         - Finally, feezy get the contains image in html when if not exists.
         """
 
@@ -98,9 +130,18 @@ class Item(object):
         doc = pq(''.join(map(str, doc)) or None)
         imgs |= set([i.attrib['src'] for i in doc('img')])
 
+        doc = pq(self.item.get('summary') or None)
+        imgs |= set([i.attrib['src'] for i in doc('img')])
+
         if not any(imgs):
             # TODO: Request page
             pass
 
         allow = ['.jpg', '.jpeg', '.gif', '.png', '.bmp']
         return [i for i in imgs if uri.uriext(i) in allow]
+
+
+def _rq(url):
+    return requests.get(url, headers={
+        'User-Agent': settings.USER_AGENT['firefox']
+    })

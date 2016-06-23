@@ -1,12 +1,8 @@
 import io
 
-from django.core.cache import caches
-
-import requests
 from PIL import Image as IMG
 
-cache = caches['image']
-requests.adapters.DEFAULT_RETRIES = 5  # Force assign(patch)
+from . import client
 
 
 class Image(object):
@@ -17,12 +13,7 @@ class Image(object):
 
     @property
     def content(self):
-        content = cache.get(self.uri)
-        if not content:
-            content = _rq(self.uri).content
-            cache.set(self.uri, content)
-
-        return content
+        return client.img(self.uri)
 
     @property
     def image(self):
@@ -109,11 +100,3 @@ class Images(object):
                 uris.append(img['url'])
 
         return uris
-
-
-def _rq(url):
-    return requests.get(url, headers={
-        'User-Agent': (
-            'Mozilla/5.0 (Windows NT 10.0; Win64; x64; '
-            'rv:47.0) Gecko/20100101 Firefox/47.0')
-    })
