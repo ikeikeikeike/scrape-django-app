@@ -39,18 +39,18 @@ class Image(object):
         return self.image.height
 
 
-class Urls(object):
+class Images(object):
 
-    def __init__(self, urls):
-        self.urls = urls
+    def __init__(self, uris):
+        self.uris = uris
         self._images = []
 
     @property
     def images(self):
         if not self._images:
-            imgs = (
+            imgs = [
                 {'url': u, 'img': Image(u)}
-                for u in self.urls)
+                for u in self.uris]
             self._images = imgs
 
         return self._images
@@ -64,14 +64,28 @@ class Urls(object):
         return sorted(self.images, key=fun)
 
     def better(self, limit=5):
-        urls = []
-        for i, img in enumerate(self.desc()):
-            if i < limit:
-                break
-            if 500 < img['img'].width() < 1500:
-                urls.append(img['url'])
+        uris = []
 
-        return urls
+        for img in self.desc():
+            if limit < len(uris):
+                break
+            if 600 < img['img'].width() < 1600:
+                uris.append(img['url'])
+
+        for img in self.desc():
+            if limit < len(uris):
+                break
+            if 300 < img['img'].width():
+                uris.append(img['url'])
+
+        if not uris:
+            for img in self.desc():
+                if limit < len(uris):
+                    break
+                if not img['url'] in uris:
+                    uris.append(img['url'])
+
+        return uris
 
 
 def _rq(url):
