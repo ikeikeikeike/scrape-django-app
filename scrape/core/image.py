@@ -5,8 +5,8 @@ from django.core.cache import caches
 import requests
 from PIL import Image as IMG
 
-
 cache = caches['image']
+requests.adapters.DEFAULT_RETRIES = 5  # Force assign(patch)
 
 
 class Image(object):
@@ -32,6 +32,14 @@ class Image(object):
 
         return self._image
 
+    @property
+    def ok(self):
+        try:
+            self.image
+        except OSError:
+            return False
+        return True
+
     def width(self):
         return self.image.width
 
@@ -48,11 +56,18 @@ class Images(object):
     @property
     def images(self):
         if not self._images:
-            imgs = [
-                {'url': u, 'img': Image(u)}
-                for u in self.uris]
-            self._images = imgs
+            imgs = []
 
+            for uri in self.uris:
+                img = Image(uri)
+
+                if img.ok:
+                    imgs.append({
+                        'url': uri,
+                        'img': img
+                    })
+
+            self._images = imgs
         return self._images
 
     def asc(self, wh='width'):
@@ -71,19 +86,27 @@ class Images(object):
                 break
             if 600 < img['img'].width() < 1600:
                 uris.append(img['url'])
+        if not uris:
+            uris = self._better(uris, 500)
+        if not uris:
+            uris = self._better(uris, 400)
+        if not uris:
+            uris = self._better(uris, 300)
+        if not uris:
+            uris = self._better(uris, 200)
+        if not uris:
+            uris = self._better(uris, 100)
+        if not uris:
+            uris = self._better(uris, 0)
 
+        return uris
+
+    def _better(self, uris, width, limit=5):
         for img in self.desc():
             if limit < len(uris):
                 break
-            if 300 < img['img'].width():
+            if width < img['img'].width():
                 uris.append(img['url'])
-
-        if not uris:
-            for img in self.desc():
-                if limit < len(uris):
-                    break
-                if not img['url'] in uris:
-                    uris.append(img['url'])
 
         return uris
 
