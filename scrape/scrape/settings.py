@@ -62,10 +62,15 @@ CACHES = {
         'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
         'LOCATION': 'default-location'
     },
-    'image': {
+    'tmp_image': {
         'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
         'LOCATION': 'image-location',
         'TIMEOUT': 60 * 60 * 24 * 5,  # 5 days
+    },
+    'tmp_html': {
+        'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
+        'LOCATION': 'html-location',
+        'TIMEOUT': 60 * 60 * 5,  # 5 hours
     },
 }
 
@@ -75,3 +80,14 @@ USE_I18N = True
 USE_L10N = True
 USE_TZ = True
 STATIC_URL = '/static/'
+
+USER_AGENT = {
+    'chrome': (
+        'Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 '
+        '(KHTML, like Gecko) Chrome/51.0.2704.103 Safari/537.36'
+    ),
+    'firefox': (
+        'Mozilla/5.0 (Windows NT 10.0; Win64; x64; '
+        'rv:47.0) Gecko/20100101 Firefox/47.0'
+    ),
+}
