@@ -56,7 +56,9 @@ class Scrape(object):
         return s and strip_tags(s.strip())
 
     def image(self):
-        # TODO: Feezy get the contains image in html by pyquery when if not exists.
+        # TODO: Feezy get the contains image in html by
+        # pyquery when if not exists.
+        #
         # some pattern
         return
 

@@ -70,7 +70,7 @@ CACHES = {
     'tmp_html': {
         'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
         'LOCATION': 'html-location',
-        'TIMEOUT': 60 * 60 * 5,  # 5 hours
+        'TIMEOUT': 60 * 60 * 1,  # 1 hours
     },
 }
 
