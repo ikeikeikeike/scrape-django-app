@@ -19,7 +19,7 @@ feedparser.USER_AGENT = settings.USER_AGENT['chrome']  # Force assign(patch)
 
 class Scrape(object):
     def __init__(self, url):
-        self._url = url
+        self.url = url
         self._feed = None
 
     def __repr__(self):
@@ -28,7 +28,7 @@ class Scrape(object):
     @property
     def feed(self):
         if self._feed is None:
-            self._feed = feedparser.parse(self._url)
+            self._feed = feedparser.parse(self.url)
         return self._feed
 
     @property
@@ -56,7 +56,7 @@ class Scrape(object):
         return s and strip_tags(s.strip())
 
     def image(self):
-        # TODO: Feezy get the contains image in html by
+        # TODO: Fuzzy get the contains images from html using
         # pyquery when if not exists.
         #
         # some pattern
@@ -139,7 +139,7 @@ class Item(object):
             # TODO: Request page
             pass
 
-        allow = ['.jpg', '.jpeg', '.gif', '.png', '.bmp']
+        allow = settings.ALLOW_EXTENSIONS
         return [i for i in imgs if uri.uriext(i) in allow]
 
 

@@ -7,13 +7,13 @@ from . import client
 
 class Image(object):
 
-    def __init__(self, uri):
-        self.uri = uri
+    def __init__(self, url):
+        self.url = url
         self._image = None
 
     @property
     def content(self):
-        return client.img(self.uri)
+        return client.img(self.url)
 
     @property
     def image(self):
@@ -40,8 +40,8 @@ class Image(object):
 
 class Images(object):
 
-    def __init__(self, uris):
-        self.uris = uris
+    def __init__(self, urls):
+        self.urls = urls
         self._images = []
 
     @property
@@ -49,12 +49,12 @@ class Images(object):
         if not self._images:
             imgs = []
 
-            for uri in self.uris:
-                img = Image(uri)
+            for url in self.urls:
+                img = Image(url)
 
                 if img.ok:
                     imgs.append({
-                        'url': uri,
+                        'url': url,
                         'img': img
                     })
 
@@ -70,33 +70,33 @@ class Images(object):
         return sorted(self.images, key=fun)
 
     def better(self, limit=5):
-        uris = []
+        urls = []
 
         for img in self.desc():
-            if limit < len(uris):
+            if limit < len(urls):
                 break
             if 600 < img['img'].width() < 1600:
-                uris.append(img['url'])
-        if not uris:
-            uris = self._better(uris, 500)
-        if not uris:
-            uris = self._better(uris, 400)
-        if not uris:
-            uris = self._better(uris, 300)
-        if not uris:
-            uris = self._better(uris, 200)
-        if not uris:
-            uris = self._better(uris, 100)
-        if not uris:
-            uris = self._better(uris, 0)
+                urls.append(img['url'])
+        if not urls:
+            urls = self._better(urls, 500)
+        if not urls:
+            urls = self._better(urls, 400)
+        if not urls:
+            urls = self._better(urls, 300)
+        if not urls:
+            urls = self._better(urls, 200)
+        if not urls:
+            urls = self._better(urls, 100)
+        if not urls:
+            urls = self._better(urls, 0)
 
-        return uris
+        return urls
 
-    def _better(self, uris, width, limit=5):
+    def _better(self, urls, width, limit=5):
         for img in self.desc():
-            if limit < len(uris):
+            if limit < len(urls):
                 break
             if width < img['img'].width():
-                uris.append(img['url'])
+                urls.append(img['url'])
 
-        return uris
+        return urls

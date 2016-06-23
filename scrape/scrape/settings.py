@@ -91,3 +91,5 @@ USER_AGENT = {
         'rv:47.0) Gecko/20100101 Firefox/47.0'
     ),
 }
+
+ALLOW_EXTENSIONS = ['.jpg', '.jpeg', '.gif', '.png', '.bmp']
