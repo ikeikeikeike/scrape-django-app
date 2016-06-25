@@ -3,17 +3,15 @@ import re
 from django.conf import settings
 from django.utils.html import strip_tags
 
-import requests
 import feedparser
 from pyquery import PyQuery as pq
 
-from core import uri
 from core import client
+from core import extractor
 from core.elements import safe
 
 
 wptn = re.compile(r'\w')
-requests.adapters.DEFAULT_RETRIES = 5  # Force assign(patch)
 feedparser.USER_AGENT = settings.USER_AGENT['chrome']  # Force assign(patch)
 
 
@@ -65,8 +63,14 @@ class Scrape(object):
     def entries(self):
         return safe(self.feed, 'entries')
 
-    def items(self):
-        return [Item(e) for e in self.entries()]
+    def items(self, num=10):
+        items = []
+        for i, e in enumerate(self.entries()):
+            if i > num:
+                break
+
+            items.append(Item(e))
+        return items
 
 
 class Item(object):
@@ -77,10 +81,18 @@ class Item(object):
     def __repr__(self):
         return str(self.item)
 
+    @property
+    def ok(self):
+        return bool(client.html(self.url))
+
+    @property
+    def url(self):
+        return self.item['id']
+
     def title(self):
         s = safe(self.item, 'title')
         if not wptn.match(s):
-            doc = pq(client.html(self.item['id']) or None)
+            doc = pq(client.html(self.url) or None)
             s = doc('title').text()
 
         return s and strip_tags(s.strip())
@@ -88,7 +100,7 @@ class Item(object):
     def description(self):
         s = safe(self.item, 'summary')
         if not wptn.match(s):
-            doc = pq(client.html(self.item['id']) or None)
+            doc = pq(client.html(self.url) or None)
             s = doc('meta[name="description"]').attr('content')
 
         return s and strip_tags(s.strip())
@@ -98,7 +110,7 @@ class Item(object):
         t = t and [safe(s['term']) for s in t]
 
         if not t:
-            doc = pq(client.html(self.item['id']) or None)
+            doc = pq(client.html(self.url) or None)
             t = doc('meta[name="keywords"]').attr('content')
             t = t and t.split(',')
 
@@ -112,6 +124,7 @@ class Item(object):
         - content: [{'value': '<span>egg</span><img src="http://example.com
                     .jpg" /><div><img src="http://example.ssjpg" /></div>'}]
         - summary: '<img src="http://example.ssjpg" /></div>'
+
         - Finally, feezy get the contains image in html when if not exists.
         """
 
@@ -136,14 +149,8 @@ class Item(object):
         imgs |= set([i.attrib['src'] for i in doc('img')])
 
         if not any(imgs):
-            # TODO: Request page
+            # XXX: Request page
             pass
 
         allow = settings.ALLOW_EXTENSIONS
-        return [i for i in imgs if uri.uriext(i) in allow]
-
-
-def _rq(url):
-    return requests.get(url, headers={
-        'User-Agent': settings.USER_AGENT['firefox']
-    })
+        return [i for i in imgs if extractor.uriext(i) in allow]

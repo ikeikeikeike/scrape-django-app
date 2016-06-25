@@ -69,34 +69,43 @@ class Images(object):
         fun = lambda i: -getattr(i['img'], wh)()
         return sorted(self.images, key=fun)
 
-    def better(self, limit=5):
+    def better(self, wh='width', limit=5):
+        """ Not ordered image
+        """
+        high, low = 1600, 600
+        if wh != 'width':
+            high, low = 3000, 500
+
         urls = []
 
-        for img in self.desc():
+        for img in self.images:
             if limit < len(urls):
                 break
-            if 600 < img['img'].width() < 1600:
+            if high > getattr(img['img'], wh)() > low:
                 urls.append(img['url'])
         if not urls:
-            urls = self._better(urls, 500)
+            urls = self._better(urls, wh, low - 100)
         if not urls:
-            urls = self._better(urls, 400)
+            urls = self._better(urls, wh, low - 200)
         if not urls:
-            urls = self._better(urls, 300)
+            urls = self._better(urls, wh, low - 300)
         if not urls:
-            urls = self._better(urls, 200)
+            urls = self._better(urls, wh, low - 400)
         if not urls:
-            urls = self._better(urls, 100)
+            urls = self._better(urls, wh, low - 500)
         if not urls:
-            urls = self._better(urls, 0)
+            urls = self._better(urls, wh, 0)
 
         return urls
 
-    def _better(self, urls, width, limit=5):
-        for img in self.desc():
+    def _better(self, urls, wh, size, limit=5):
+        for img in self.images:
             if limit < len(urls):
                 break
-            if width < img['img'].width():
+            elif img['url'] in urls:
+                continue
+
+            if getattr(img['img'], wh)() > size:
                 urls.append(img['url'])
 
         return urls
