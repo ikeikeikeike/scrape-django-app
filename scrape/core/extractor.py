@@ -1,3 +1,4 @@
+import re
 from urllib.parse import urlparse
 from os.path import splitext, basename
 
@@ -21,3 +22,7 @@ def domain(uri):
         return u.netloc.split('.')[0]
     else:
         return None
+
+
+def remove_link(text):
+    return re.sub(r"h?ttps?\S+", "", text)
