@@ -8,7 +8,7 @@ from pyquery import PyQuery as pq
 
 from core import client
 from core import extractor
-from core.elements import safe
+from core.extractor import safe_element as selm
 
 
 wptn = re.compile(r'\w')
@@ -32,24 +32,24 @@ class Scrape(object):
 
     @property
     def ok(self):
-        return safe(self.feed, 'bozo') == 0
+        return selm(self.feed, 'bozo') == 0
 
     def title(self):
-        f = safe(self.feed, 'feed')
-        s = safe(f, 'title')
+        f = selm(self.feed, 'feed')
+        s = selm(f, 'title')
 
         if not wptn.match(s):
-            doc = pq(self._rq(safe(f, 'link')) or None)
+            doc = pq(self._rq(selm(f, 'link')) or None)
             s = doc('title').text()
 
         return s and strip_tags(s.strip())
 
     def description(self):
-        f = safe(self.feed, 'feed')
-        s = safe(f, 'subtitle')
+        f = selm(self.feed, 'feed')
+        s = selm(f, 'subtitle')
 
         if not wptn.match(s):
-            doc = pq(self._rq(safe(f, 'link')) or None)
+            doc = pq(self._rq(selm(f, 'link')) or None)
             s = doc('meta[name="description"]').attr('content')
 
         return s and strip_tags(s.strip())
@@ -62,7 +62,7 @@ class Scrape(object):
         return
 
     def entries(self):
-        return safe(self.feed, 'entries')
+        return selm(self.feed, 'entries')
 
     def items(self, num=10):
         items = []
@@ -92,7 +92,7 @@ class Item(object):
         return self.item['id']
 
     def title(self):
-        s = safe(self.item, 'title')
+        s = selm(self.item, 'title')
         if not wptn.match(s):
             doc = pq(self._rq(self.url) or None)
             s = doc('title').text()
@@ -100,7 +100,7 @@ class Item(object):
         return s and strip_tags(s.strip())
 
     def description(self):
-        s = safe(self.item, 'summary')
+        s = selm(self.item, 'summary')
         if not wptn.match(s):
             doc = pq(self._rq(self.url) or None)
             s = doc('meta[name="description"]').attr('content')
@@ -108,8 +108,8 @@ class Item(object):
         return s and strip_tags(s.strip())
 
     def tags(self):
-        t = safe(self.item, 'tags')
-        t = t and [safe(s['term']) for s in t]
+        t = selm(self.item, 'tags')
+        t = t and [selm(s['term']) for s in t]
 
         if not t:
             doc = pq(self._rq(self.url) or None)
@@ -132,16 +132,16 @@ class Item(object):
 
         imgs = set()
 
-        elms = safe(self.item, 'links') or []
+        elms = selm(self.item, 'links') or []
         imgs |= set([elm.get('href') for elm in elms])
 
-        elms = safe(self.item, 'media_content') or []
+        elms = selm(self.item, 'media_content') or []
         imgs |= set([elm['url'] for elm in elms])
 
-        url = safe(self.item, 'image_item', 'rdf:about')
+        url = selm(self.item, 'image_item', 'rdf:about')
         imgs |= set([url])
 
-        elms = safe(self.item, 'content') or []
+        elms = selm(self.item, 'content') or []
         doc = set([elm['value'] for elm in elms])
 
         doc = pq(''.join(map(str, doc)) or None)

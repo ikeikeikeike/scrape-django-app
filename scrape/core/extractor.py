@@ -2,6 +2,8 @@ import re
 from urllib.parse import urlparse
 from os.path import splitext, basename
 
+from django.utils.html import strip_tags
+
 
 def uriext(uri):
     disassembled = urlparse(uri)
@@ -26,3 +28,20 @@ def domain(uri):
 
 def remove_link(text):
     return re.sub(r"h?ttps?\S+", "", text)
+
+
+def safe_content(text):
+    return remove_link(strip_tags(text)).strip()
+
+
+def safe_element(feed, *attrs):
+    try:
+        for attr in attrs:
+            feed = feed[attr]
+    except KeyError:
+        return
+
+    if isinstance(feed, str):
+        return strip_tags(feed)
+
+    return feed
