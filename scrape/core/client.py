@@ -11,7 +11,7 @@ html_cache = caches['tmp_html']
 
 
 def rq():
-    retries = HTTPAdapter(max_retries=5)
+    retries = HTTPAdapter(max_retries=40)
     ua = random.choice(list(settings.USER_AGENT.values()))
 
     s = requests.Session()
