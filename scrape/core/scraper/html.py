@@ -57,10 +57,10 @@ class Scrape(object):
         imgs = []
 
         for i in image.Images(self.images()).images:
-            r = high > i['img'].height() > low
-            r = r and i['img'].width() > 200
+            cond = high > i['img'].height() > low
+            cond = cond and i['img'].width() > 200
 
-            if r:
+            if cond:
                 imgs.append(i['url'])
 
         return imgs
