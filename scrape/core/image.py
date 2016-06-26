@@ -10,10 +10,11 @@ class Image(object):
     def __init__(self, url):
         self.url = url
         self._image = None
+        self._rq = client.img
 
     @property
     def content(self):
-        return client.img(self.url)
+        return self._rq(self.url)
 
     @property
     def image(self):

@@ -19,6 +19,7 @@ class Scrape(object):
     def __init__(self, url):
         self.url = url
         self._feed = None
+        self._rq = client.html
 
     def __repr__(self):
         return str(self._feed)
@@ -38,7 +39,7 @@ class Scrape(object):
         s = safe(f, 'title')
 
         if not wptn.match(s):
-            doc = pq(client.html(safe(f, 'link')) or None)
+            doc = pq(self._rq(safe(f, 'link')) or None)
             s = doc('title').text()
 
         return s and strip_tags(s.strip())
@@ -48,7 +49,7 @@ class Scrape(object):
         s = safe(f, 'subtitle')
 
         if not wptn.match(s):
-            doc = pq(client.html(safe(f, 'link')) or None)
+            doc = pq(self._rq(safe(f, 'link')) or None)
             s = doc('meta[name="description"]').attr('content')
 
         return s and strip_tags(s.strip())
@@ -77,13 +78,14 @@ class Item(object):
 
     def __init__(self, item):
         self.item = item
+        self._rq = client.html
 
     def __repr__(self):
         return str(self.item)
 
     @property
     def ok(self):
-        return bool(client.html(self.url))
+        return bool(self._rq(self.url))
 
     @property
     def url(self):
@@ -92,7 +94,7 @@ class Item(object):
     def title(self):
         s = safe(self.item, 'title')
         if not wptn.match(s):
-            doc = pq(client.html(self.url) or None)
+            doc = pq(self._rq(self.url) or None)
             s = doc('title').text()
 
         return s and strip_tags(s.strip())
@@ -100,7 +102,7 @@ class Item(object):
     def description(self):
         s = safe(self.item, 'summary')
         if not wptn.match(s):
-            doc = pq(client.html(self.url) or None)
+            doc = pq(self._rq(self.url) or None)
             s = doc('meta[name="description"]').attr('content')
 
         return s and strip_tags(s.strip())
@@ -110,7 +112,7 @@ class Item(object):
         t = t and [safe(s['term']) for s in t]
 
         if not t:
-            doc = pq(client.html(self.url) or None)
+            doc = pq(self._rq(self.url) or None)
             t = doc('meta[name="keywords"]').attr('content')
             t = t and t.split(',')
 
