@@ -63,16 +63,7 @@ class Scrape(object):
             url = ''
             sp = spider.spider(url)
 
-            content = {
-                'url': sp.url,
-                'title': sp.extract_title(),
-                'content': sp.extract_content(),
-                'duration': sp.extract_duration(),
-                'code': sp.extract_embed_code(),
-                'images': sp.extract_image_urls(),
-                'tags': sp.extract_tags(),
-                'divas': sp.extract_divas(),
-            }
+            content = sp.info()
 
             if True:
                 vids.append({
