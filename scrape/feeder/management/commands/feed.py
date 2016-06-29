@@ -1,6 +1,7 @@
 from django.core.management.base import BaseCommand  # , CommandError
 
 from core.scraper import feed
+from core.scraper import html
 
 
 class Command(BaseCommand):
