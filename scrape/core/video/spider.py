@@ -1,4 +1,7 @@
+import importlib
 from urllib import parse
+
+import tldextract
 
 from core import client
 from pyquery import PyQuery as pq
@@ -98,3 +101,15 @@ class SpiderBase(object):
         """ extracet image_urls
         """
         raise NotImplementedError
+
+
+def spider(url):
+    name = tldextract.extract(url).domain
+
+    mod_name = 'core.video.spiders.%s' % name.replace('-', '_')
+    mod = importlib.import_module(mod_name)
+
+    klass_name = name.title().replace('-', '')
+    klass = getattr(mod, klass_name)
+
+    return klass(url)

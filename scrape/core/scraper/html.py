@@ -49,7 +49,11 @@ class Scrape(object):
         return s and strip_tags(s.strip())
 
     def videos(self):
-        return
+        for name, dct in settings.VIDEO_ELEMENTS.items():
+            dct['href']
+            dct['code']
+            self.doc("a[href*='%s']")
+            self.doc("iframe")
 
     def pictures(self):
         """ Ordered image """
