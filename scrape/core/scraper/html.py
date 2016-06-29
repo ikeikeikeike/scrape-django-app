@@ -12,6 +12,7 @@ from core import image
 from core import client
 from core import detector as detor
 from core import extractor as ector
+from core.video import spider
 
 wptn = re.compile(r'\w')
 
@@ -49,11 +50,34 @@ class Scrape(object):
         return s and strip_tags(s.strip())
 
     def videos(self):
+        vids = []
+
         for name, dct in settings.VIDEO_ELEMENTS.items():
+
             dct['href']
             dct['code']
+
             self.doc("a[href*='%s']")
             self.doc("iframe")
+
+            url = ''
+            sp = spider.spider(url)
+
+            content = {
+                'url': sp.url,
+                'title': sp.extract_title(),
+                'content': sp.extract_content(),
+                'duration': sp.extract_duration(),
+                'code': sp.extract_embed_code(),
+                'images': sp.extract_image_urls(),
+                'tags': sp.extract_tags(),
+                'divas': sp.extract_divas(),
+            }
+
+            if True:
+                vids.append({
+                    name: content
+                })
 
     def pictures(self):
         """ Ordered image """
