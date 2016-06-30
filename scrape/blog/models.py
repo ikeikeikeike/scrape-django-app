@@ -16,16 +16,6 @@ class Blog(core_models.BaseModel):
 
     last_modified = models.DateTimeField(blank=True, null=True)
 
-    inserted_at = models.DateTimeField(
-        default=timezone.now,
-        editable=False,
-        db_index=False)
-
-    updated_at = models.DateTimeField(
-        auto_now=True,
-        editable=False,
-        db_index=True)
-
     class Meta:
         db_table = 'blogs'
 

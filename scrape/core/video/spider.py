@@ -41,6 +41,10 @@ class SpiderBase(object):
     def __repr__(self):
         return self.name
 
+    # @property
+    # def ok(self):
+    #     return self.name
+
     @property
     def html(self):
         if self._html is None:

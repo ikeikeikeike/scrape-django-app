@@ -50,25 +50,48 @@ class Scrape(object):
         return s and strip_tags(s.strip())
 
     def videos(self):
-        vids = []
+        videos = []
 
         for name, dct in settings.VIDEO_ELEMENTS.items():
+            content = {}
 
-            dct['href']
-            dct['code']
+            hrefs, codes = [], []
 
-            self.doc("a[href*='%s']")
-            self.doc("iframe")
+            for href in dct['href']:
+                for tag in self.doc("a[href*='%s']" % href):
+                    hrefs.append(tag.attrib['href'])
 
-            url = ''
-            sp = spider.spider(url)
+            for code in dct['code']:
+                sel = (
+                    'iframe[src*="{code}"],iframe[url*="{code}"],'
+                    'script[src*="{code}"],script[url*="{code}"]'
+                )
 
-            content = sp.info()
+                element = self.doc(sel.format(code=code))
+                if element:
+                    codes.append(str(element))
 
-            if True:
-                vids.append({
-                    name: content
+            for href in hrefs:
+                sp = spider.spider(href)
+
+                content.update({
+                    'title': sp.extract_title(),
+                    'content': sp.extract_content(),
+                    'tags': sp.extract_tags(),
+                    'divas': sp.extract_divas(),
+                    'images': sp.extract_image_urls(),
                 })
+                codes.append(sp.extract_embed_code())
+
+            if hrefs:
+                content.update({'hrefs': hrefs})
+            if codes:
+                content.update({'codes': codes})
+
+            if content:
+                videos.append({name: content})
+
+        return videos
 
     def pictures(self):
         """ Ordered image """
