@@ -4,11 +4,11 @@ from django.conf import settings
 from django.core.cache import caches
 
 import requests
-import eventlet
+#  import eventlet
 
 from requests import adapters
 
-eventlet.monkey_patch()
+#  eventlet.monkey_patch()
 
 img_cache = caches['tmp_image']
 html_cache = caches['tmp_html']
@@ -33,10 +33,10 @@ def img(uri, headers=None):
 
     if not content:
         try:
-            with eventlet.Timeout(10):
-                r = rq(headers or {}).get(uri, verify=False)
+            #  with eventlet.Timeout(10):
+            r = rq(headers or {}).get(uri, verify=False)
         except (
-            eventlet.timeout.Timeout,
+            #  eventlet.timeout.Timeout,
             requests.exceptions.ConnectionError,
         ):
             return None
@@ -53,10 +53,10 @@ def html(uri, headers=None):
 
     if not content:
         try:
-            with eventlet.Timeout(10):
-                r = rq(headers or {}).get(uri, verify=False)
+            #  with eventlet.Timeout(10):
+            r = rq(headers or {}).get(uri, verify=False)
         except (
-            eventlet.timeout.Timeout,
+            #  eventlet.timeout.Timeout,
             requests.exceptions.ConnectionError,
         ):
             return None

@@ -45,12 +45,15 @@ class Scrape(object):
         s = self.doc('title').text()
         return s and strip_tags(s.strip())
 
+    def explain(self):
+        return self.description()
+
     def description(self):
         s = self.doc('meta[name="description"]')
         s = s.attr('content')
         return s and strip_tags(s.strip())
 
-    def _videos(self):
+    def videos(self):
         videos = []
 
         for name in settings.VIDEO_ELEMENTS:
@@ -71,53 +74,6 @@ class Scrape(object):
 
             if contents:
                 videos.append({name: contents})
-
-        return videos
-
-    def videos(self):
-        videos = []
-
-        for name, dct in settings.VIDEO_ELEMENTS.items():
-            content = {}
-
-            hrefs, codes = [], []
-
-            for href in dct['href']:
-                for tag in self.doc("a[href*='%s']" % href):
-                    hrefs.append(tag.attrib['href'])
-
-            for code in dct['code']:
-                sel = (
-                    'iframe[src*="{code}"],iframe[url*="{code}"],'
-                    'script[src*="{code}"],script[url*="{code}"]'
-                )
-
-                element = self.doc(sel.format(code=code))
-                if element:
-                    codes.append(str(element))
-
-            for href in hrefs:
-                sp = vspider.get_spider(href)
-
-                content.update({
-                    'title': sp.extract_title(),
-                    'content': sp.extract_content(),
-                    'tags': sp.extract_tags(),
-                    'divas': sp.extract_divas(),
-                    'images': sp.extract_image_urls(),
-                })
-
-                c = sp.extract_embed_code()
-                if c:
-                    codes.append(c)
-
-            if hrefs:
-                content.update({'hrefs': hrefs})
-            if codes:
-                content.update({'codes': codes})
-
-            if content:
-                videos.append({name: content})
 
         return videos
 

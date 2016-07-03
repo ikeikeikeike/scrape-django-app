@@ -34,6 +34,11 @@ class Scrape(object):
     def ok(self):
         return selm(self.feed, 'bozo') == 0
 
+    def host(self):
+        f = selm(self.feed, 'feed')
+        s = selm(f, 'link')
+        return s and strip_tags(s.strip())
+
     def title(self):
         f = selm(self.feed, 'feed')
         s = selm(f, 'title')
@@ -43,6 +48,9 @@ class Scrape(object):
             s = doc('title').text()
 
         return s and strip_tags(s.strip())
+
+    def explain(self):
+        return self.description()
 
     def description(self):
         f = selm(self.feed, 'feed')
@@ -73,6 +81,9 @@ class Scrape(object):
             items.append(Item(e))
         return items
 
+    def item_urls(self, num=10):
+        return [i.url for i in self.items(10)]
+
 
 class Item(object):
 
@@ -98,6 +109,9 @@ class Item(object):
             s = doc('title').text()
 
         return s and strip_tags(s.strip())
+
+    def explain(self):
+        return self.description()
 
     def description(self):
         s = selm(self.item, 'summary')

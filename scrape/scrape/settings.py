@@ -57,19 +57,32 @@ DATABASES = {
     }
 }
 
+REDISES = {
+    'item': {
+        'HOST': 'localhost',
+        'PORT': 6379,
+        'DB': 1
+    },
+}
+
 CACHES = {
     'default': {
         'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
         'LOCATION': 'default-location'
     },
+    'feed': {
+        'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
+        'LOCATION': 'feed-location',
+        'TIMEOUT': 60 * 60 * 24 * 1,  # 1 days
+    },
     'tmp_image': {
         'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
-        'LOCATION': 'image-location',
+        'LOCATION': 'tmpimage-location',
         'TIMEOUT': 60 * 60 * 24 * 5,  # 5 days
     },
     'tmp_html': {
         'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
-        'LOCATION': 'html-location',
+        'LOCATION': 'tmphtml-location',
         'TIMEOUT': 60 * 60 * 1,  # 1 hours
     },
 }
