@@ -49,6 +49,37 @@ class Scrape(object):
         s = s.attr('content')
         return s and strip_tags(s.strip())
 
+    def _videos(self):
+        videos = []
+
+        for name, dct in settings.VIDEO_ELEMENTS.items():
+
+            contents, hrefs = [], []
+
+            for tag in self.doc("a"):
+                hrefs.append(tag.attrib['href'])
+                contents.append({'url': tag.attrib['href']})
+
+            # sel = (
+            #     'iframe[src*="{code}"],iframe[url*="{code}"],'
+            #     'script[src*="{code}"],script[url*="{code}"]'
+            # )
+
+            for tag in self.doc('iframe,script'):
+
+                element = self.doc(sel.format(code=code))
+                if element:
+                    contents.append({'embed_code': str(element)})
+
+            for href in hrefs:
+                sp = spider.get_spider(href)
+                contents.append(sp.info())
+
+            if contents:
+                videos.append({name: contents})
+
+        return videos
+
     def videos(self):
         videos = []
 
@@ -72,7 +103,7 @@ class Scrape(object):
                     codes.append(str(element))
 
             for href in hrefs:
-                sp = spider.spider(href)
+                sp = spider.get_spider(href)
 
                 content.update({
                     'title': sp.extract_title(),
@@ -81,7 +112,10 @@ class Scrape(object):
                     'divas': sp.extract_divas(),
                     'images': sp.extract_image_urls(),
                 })
-                codes.append(sp.extract_embed_code())
+
+                c = sp.extract_embed_code()
+                if c:
+                    codes.append(c)
 
             if hrefs:
                 content.update({'hrefs': hrefs})

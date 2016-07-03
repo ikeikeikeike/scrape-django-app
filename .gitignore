@@ -93,3 +93,4 @@ settings_local.py
 *.sqlite3
 tags
 /scrape/core/video/spiders/
+/scrape/core/video/extractors/

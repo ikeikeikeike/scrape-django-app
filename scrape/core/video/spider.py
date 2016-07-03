@@ -107,13 +107,20 @@ class SpiderBase(object):
         raise NotImplementedError
 
 
-def spider(url):
+def import_spider(name):
+    kname = name.title().replace('-', '').replace('_', '')
+    mname = 'core.video.spiders.%s' % name.replace('-', '_')
+
+    try:
+        mod = importlib.import_module(mname)
+    except ImportError:
+        return None
+
+    return getattr(mod, kname)
+
+
+def get_spider(url):
     name = tldextract.extract(url).domain
+    klass = import_spider(name)
 
-    mod_name = 'core.video.spiders.%s' % name.replace('-', '_')
-    mod = importlib.import_module(mod_name)
-
-    klass_name = name.title().replace('-', '')
-    klass = getattr(mod, klass_name)
-
-    return klass(url)
+    return klass and klass(url)
