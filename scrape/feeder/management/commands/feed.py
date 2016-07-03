@@ -2,6 +2,8 @@ from django.core.management.base import BaseCommand  # , CommandError
 
 from django.core.cache import caches
 
+import eventlet
+
 from core import image
 from core.scraper import feed
 from core.scraper import html
@@ -11,6 +13,7 @@ from feeder import redis
 
 fstore = caches['feed']
 istore = redis.Item()
+eventlet.monkey_patch(socket=True)
 
 
 class Command(BaseCommand):
