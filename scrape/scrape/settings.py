@@ -75,6 +75,7 @@ CACHES = {
         'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
         'LOCATION': 'feed-location',
         'TIMEOUT': 60 * 60 * 24 * 1,  # 1 days
+        'KEY_FUNCTION': lambda key, key_prefix, version: key,
     },
     'tmp_image': {
         'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
