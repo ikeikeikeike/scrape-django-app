@@ -12,7 +12,8 @@ from core import image
 from core import client
 from core import detector as detor
 from core import extractor as ector
-from core.video import spider
+from core.video import extractor as vextor
+from core.video import spider as vspider
 
 wptn = re.compile(r'\w')
 
@@ -52,28 +53,21 @@ class Scrape(object):
     def _videos(self):
         videos = []
 
-        for name, dct in settings.VIDEO_ELEMENTS.items():
+        for name in settings.VIDEO_ELEMENTS:
+            contents = []
+            vext = vextor.get_extractor(name, self.url)
 
-            contents, hrefs = [], []
+            if vext:
+                for url in vext.extract_urls():
+                    contents.append({'url': url})
 
-            for tag in self.doc("a"):
-                hrefs.append(tag.attrib['href'])
-                contents.append({'url': tag.attrib['href']})
+                for code in vext.extract_embed_codes():
+                    contents.append({'embed_code': code})
 
-            # sel = (
-            #     'iframe[src*="{code}"],iframe[url*="{code}"],'
-            #     'script[src*="{code}"],script[url*="{code}"]'
-            # )
-
-            for tag in self.doc('iframe,script'):
-
-                element = self.doc(sel.format(code=code))
-                if element:
-                    contents.append({'embed_code': str(element)})
-
-            for href in hrefs:
-                sp = spider.get_spider(href)
-                contents.append(sp.info())
+                for href in vext.extract_urls():
+                    sp = vspider.get_spider(href)
+                    if sp:
+                        contents.append(sp.info())
 
             if contents:
                 videos.append({name: contents})
@@ -103,7 +97,7 @@ class Scrape(object):
                     codes.append(str(element))
 
             for href in hrefs:
-                sp = spider.get_spider(href)
+                sp = vspider.get_spider(href)
 
                 content.update({
                     'title': sp.extract_title(),

@@ -94,4 +94,4 @@ USER_AGENT = {
 
 ALLOW_EXTENSIONS = ['.jpg', '.jpeg', '.gif', '.png', '.bmp']
 
-VIDEO_ELEMENTS = {}
+VIDEO_ELEMENTS = []
