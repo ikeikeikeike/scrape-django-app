@@ -48,7 +48,7 @@ class Command(BaseCommand):
 
                 istore.append(b.rss, {
                     'url': item.url,
-                    'title': f.title() or h.title(),
+                    'title': item.title() or h.title(),
                     'explain': item.explain() or h.explain(),
                     'tags': item.tags(),
                     'images': images.better(),
