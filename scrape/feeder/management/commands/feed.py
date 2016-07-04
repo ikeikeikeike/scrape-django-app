@@ -1,4 +1,4 @@
-from django.core.management.base import BaseCommand  # , CommandError
+from django.core.management.base import BaseCommand
 
 from django.core.cache import caches
 
@@ -33,8 +33,14 @@ class Command(BaseCommand):
                 'explain': f.description(),
             })
 
+            exists = []
+            for e in istore.all(b.rss):
+                exists.append(e['url'])
+
             for item in f.items():
                 if not item.ok:
+                    continue
+                if item.url in exists:
                     continue
 
                 h = html.Scrape(item.url)
