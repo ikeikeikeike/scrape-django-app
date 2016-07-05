@@ -54,7 +54,7 @@ class Scrape(object):
         return s and strip_tags(s.strip())
 
     def videos(self):
-        videos = []
+        videos = {}
 
         for name in settings.VIDEO_ELEMENTS:
             contents = []
@@ -73,7 +73,7 @@ class Scrape(object):
                         contents.append(sp.info())
 
             if contents:
-                videos.append({name: contents})
+                videos.update({name: contents})
 
         return videos
 
