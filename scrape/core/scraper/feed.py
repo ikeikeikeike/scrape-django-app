@@ -100,7 +100,7 @@ class Item(object):
 
     @property
     def url(self):
-        return self.item['id']
+        return self.item.get('id', self.item.get('link'))
 
     def title(self):
         s = selm(self.item, 'title')
