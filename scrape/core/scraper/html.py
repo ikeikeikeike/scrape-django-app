@@ -70,10 +70,7 @@ class Scrape(object):
                 for href in vext.extract_urls():
                     sp = vspider.get_spider(href)
                     if sp and sp.ok:
-                        print("True: ", sp.url)
                         contents.append(sp.info())
-                    else:
-                        print("False: ", sp.url)
 
             if contents:
                 videos.update({name: contents})
