@@ -41,10 +41,6 @@ class SpiderBase(object):
     def __repr__(self):
         return self.name
 
-    # @property
-    # def ok(self):
-    #     return self.name
-
     @property
     def html(self):
         if self._html is None:
@@ -54,6 +50,10 @@ class SpiderBase(object):
     @property
     def doc(self):
         return pq(self.html or None)
+
+    @property
+    def ok(self):
+        return bool(self.doc)
 
     def info(self):
         return dict(
