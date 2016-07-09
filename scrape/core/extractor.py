@@ -9,6 +9,9 @@ from django.utils.html import strip_tags
 import regex
 import dateparser
 
+alias_ptn = re.compile(r'\(|\)|,|、|（|）')
+num_ptn = re.compile(r'\d')
+
 
 def uriext(uri):
     disassembled = urlparse(uri)
@@ -50,6 +53,25 @@ def safe_element(feed, *attrs):
         return strip_tags(feed)
 
     return feed
+
+
+def safe_romaji(word):
+    if word:
+        return num_ptn.sub('', word.replace('-', '').replace('_', '').lower())
+    return word
+
+
+def safe_kana(word):
+    if word:
+        return num_ptn.sub('', word.replace('-', '').replace('_', ''))
+    return word
+
+
+def separate_alias(name):
+    names = [w for w in alias_ptn.split(name) if w]
+    if len(names) > 1:
+        return names[0], names[1:]
+    return names[0], []
 
 
 def find_date(orig):

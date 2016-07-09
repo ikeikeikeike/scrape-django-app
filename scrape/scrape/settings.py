@@ -17,6 +17,9 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles',
 
     'blog',
+    'diva',
+    'char',
+    'toon',
     'feeder',
 )
 
@@ -110,3 +113,5 @@ USER_AGENT = {
 ALLOW_EXTENSIONS = ['.jpg', '.jpeg', '.gif', '.png', '.bmp']
 
 VIDEO_ELEMENTS = []
+
+ENDPOINTS = {}

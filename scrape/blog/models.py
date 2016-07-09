@@ -17,12 +17,3 @@ class Blog(core_models.BaseModel):
 
     class Meta:
         db_table = 'blogs'
-
-    #  belongs_to :user, Exantenna.User
-
-    #  has_one :antenna, Exantenna.Antenna
-    #  has_one :thumb, {"blogs_thumbs", Exantenna.Thumb}, foreign_key: :assoc_id
-    #  has_one :penalty, {"blogs_penalties", Exantenna.Penalty}, foreign_key: :assoc_id
-
-    #  has_many :scores, {"blogs_scores", Exantenna.Score}, foreign_key: :assoc_id
-    #  has_many :verifiers, Exantenna.BlogVerifier

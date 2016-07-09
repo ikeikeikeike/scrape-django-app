@@ -1,5 +1,7 @@
 import re
 
+from django.conf import settings
+
 import requests
 from pyquery import PyQuery as pq
 
@@ -7,7 +9,7 @@ from core import bracalc
 from core import extractor
 
 
-ENDPOINT = "http://ja.wikipedia.org/w/api.php?action=parse&format=json&prop=text&uselang=ja&page="
+ENDPOINT = settings.ENDPOINTS['wikiorg']
 
 
 def fint(i):
