@@ -1,10 +1,11 @@
 import re
+import json
 
 from django.conf import settings
 
-import requests
 from pyquery import PyQuery as pq
 
+from core import client
 from core import bracalc
 from core import extractor
 
@@ -23,8 +24,8 @@ class Wikipedia(object):
 
     def request(self, query):
         if self._doc is None:
-            r = requests.get(ENDPOINT + query)
-            js = r.json()
+            r = client.html(ENDPOINT + query)
+            js = json.loads(r.decode())
 
             self._doc = ""
             if 'error' not in js:
@@ -110,7 +111,7 @@ class Wikipedia(object):
 
         if not r:
             h, b, w = self.height(), self.bust(), self.waist()
-            if h > 10 and b > 10 and w > 10:
+            if h and b and w and h > 10 and b > 10 and w > 10:
                 r = bracalc.calc(h, b, w)['cup']
 
         return r

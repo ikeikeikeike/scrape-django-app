@@ -20,7 +20,7 @@ class Diva(core_models.BaseModel):
     waist = models.IntegerField(null=True)
     hip = models.IntegerField(null=True)
 
-    blood = models.IntegerField(null=True)
+    blood = models.CharField(max_length=255, null=True, blank=True)
     birthday = models.DateField(null=True)
 
     class Meta:

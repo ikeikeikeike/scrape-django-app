@@ -9,8 +9,10 @@ from django.utils.html import strip_tags
 import regex
 import dateparser
 
-alias_ptn = re.compile(r'\(|\)|,|、|（|）')
 num_ptn = re.compile(r'\d')
+alias_ptn = re.compile(r'\(|\)|,|、|（|）')
+blood_ptn = re.compile(r'[^A|B|AB|O|RH|\+|\-]')
+bracup_ptn = re.compile(r'(カップ|CUP| |\(|\))', re.IGNORECASE)
 
 
 def uriext(uri):
@@ -64,6 +66,18 @@ def safe_romaji(word):
 def safe_kana(word):
     if word:
         return num_ptn.sub('', word.replace('-', '').replace('_', ''))
+    return word
+
+
+def safe_blood(word):
+    if word:
+        return blood_ptn.sub('', word.upper())
+    return word
+
+
+def safe_bracup(word):
+    if word:
+        return bracup_ptn.sub('', word.upper())
     return word
 
 
