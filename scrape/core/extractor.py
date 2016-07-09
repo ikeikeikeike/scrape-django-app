@@ -1,8 +1,13 @@
 import re
+import unicodedata
+
 from urllib.parse import urlparse
 from os.path import splitext, basename
 
 from django.utils.html import strip_tags
+
+import regex
+import dateparser
 
 
 def uriext(uri):
@@ -45,3 +50,56 @@ def safe_element(feed, *attrs):
         return strip_tags(feed)
 
     return feed
+
+
+def find_date(orig):
+    s = unicodedata.normalize('NFKC', orig)
+    s = "".join(s.split())
+    s = regex.sub(r'\d{1,2}歳', '', s)
+
+    try:
+        for _ in s:
+            date = dateparser.parse(s)
+            if date:
+                return date
+
+            s = _remove_right(s)
+
+        for _ in s:
+            date = dateparser.parse(s)
+            if date:
+                return date
+
+            s = _remove_left(s)
+
+    except ValueError:
+        pass
+
+    return None
+
+
+def _remove_right(letters):
+    length = len(letters)
+    letter = letters[length - 1]
+
+    if letter == u"日":
+        return letters
+    try:
+        int(letter)
+        return letters
+    except ValueError:
+        pass
+
+    return letters[:length - 1]
+
+
+def _remove_left(letters):
+    letter = letters[0]
+
+    try:
+        int(letter)
+        return letters
+    except ValueError:
+        pass
+
+    return letters[1::]
