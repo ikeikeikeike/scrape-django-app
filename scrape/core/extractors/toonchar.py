@@ -1,3 +1,4 @@
+import re
 from os.path import join as pjoin
 
 from django.conf import settings
@@ -5,24 +6,34 @@ from django.conf import settings
 from pyquery import PyQuery as pq
 
 from core import client
+from core import bracalc
+from core import extractor
 
 ENDPOINT = settings.ENDPOINTS['toonchar']
+
+weight_ptn = re.compile(r'kg', re.IGNORECASE)
+height_ptn = re.compile(r'cm', re.IGNORECASE)
+bust_ptn = re.compile(r'b', re.IGNORECASE)
+waist_ptn = re.compile(r'w', re.IGNORECASE)
+hip_ptn = re.compile(r'h', re.IGNORECASE)
 
 
 def fint(i):
     return int(float(i))
 
 
-class Toonchar(object):
+class Base(object):
 
-    def __init__(self, path, query):
-        self.query = pjoin(path, str(query))
+    PATH = NotImplementedError('wth')
+
+    def __init__(self, query):
+        self.query = str(query)
         self._html = None
 
     @property
     def html(self):
         if self._html is None:
-            url = pjoin(ENDPOINT, self.query)
+            url = self._process_url()
             self._html = client.html(url)
         return self._html
 
@@ -34,92 +45,158 @@ class Toonchar(object):
     def ok(self):
         return bool(self.doc)
 
+    def info(self):
+        raise NotImplementedError('wth')
+
+    def __repr__(self):
+        return str(self.info())
+
+    def _process_url(self):
+        return pjoin(ENDPOINT, self.PATH, self.query)
+
+
+class Char(Base):
+
+    PATH = 'characters'
+
+    def info(self):
+        return dict(
+            product=self.product(),
+            name=self.name(),
+            kana=self.kana(),
+            birthday=self.birthday(),
+            blood=self.blood(),
+            height=self.height(),
+            weight=self.weight(),
+            bust=self.bust(),
+            waist=self.waist(),
+            hip=self.hip(),
+            bracup=self.bracup(),
+            comment=self.comment(),
+            tags=self.tags(),
+        )
+
+    def product(self):
+        selector = '.profile_related a img'
+        return self.doc(selector).attr('title')
+
     def name(self):
-        import ipdb; ipdb.set_trace()
         selector = 'dl dt:contains(名前)'
+        return self.doc(selector).next().text()
 
-        text = self.doc(selector).nextAll().text()
-        return text
+    def kana(self):
+        selector = 'dl dt:contains(名前)'
+        return self.doc(selector).next().attr('title')
 
-    def birthday(self, query=None):
-        dom = pq(self.request(query))
-        selector = 'tr th:contains(生年月日),tr td:contains(生年月日)'
+    def birthday(self):
+        selector = 'dl dt:contains(誕生日)'
 
-        text = dom(selector).nextAll().text()
+        text = self.doc(selector).next().text()
         if text:
             return extractor.find_date(text)
 
-    def blood(self, query=None):
-        dom = pq(self.request(query))
-        selector = 'tr th:contains(血液型),tr td:contains(血液型)'
+    def blood(self):
+        selector = 'dl dt:contains(血液型)'
 
-        text = dom(selector).nextAll().text()
+        text = self.doc(selector).next().text()
         return text.replace('型', '')
 
-    def hw(self, query=None):
-        dom = pq(self.request(query))
-        selector = 'tr th:contains(体重), tr td:contains(体重)'
+    def height(self):
+        selector = 'dl dt:contains(身長)'
 
-        for d in dom(selector).nextAll():
-            t = pq(d).text()
-            if 'cm' in t:
-                return ''.join(t.split()).replace('cm', '').replace('kg', '')
+        text = self.doc(selector).next().text()
+        text = height_ptn.sub('', text)
+        return text and fint(text)
 
-    def height(self, query=None):
-        hw = self.hw(query)
-        if hw:
-            try:
-                return fint(hw.split('/')[0])
-            except ValueError:
-                pass
+    def weight(self):
+        selector = 'dl dt:contains(体重)'
 
-    def weight(self, query=None):
-        hw = self.hw(query)
-        if hw:
-            try:
-                return fint(hw.split('/')[1])
-            except ValueError:
-                pass
+        text = self.doc(selector).next().text()
+        text = weight_ptn.sub('', text)
+        return text and fint(text)
 
-    def bwh(self, query=None):
-        dom = pq(self.request(query))
-        selector = 'tr th:contains(スリーサイズ), tr td:contains(スリーサイズ)'
+    def bwh(self):
+        sel = 'dl dt:contains(ｽﾘｰｻｲｽﾞ),dl dt:contains(スリーサイズ)'
+        return self.doc(sel).next().text()
 
-        for d in dom(selector).nextAll():
-            t = pq(d).text()
-            if 'cm' in t:
-                return ''.join(t.split()).replace('cm', '')
+    def bust(self):
+        bwh = self.bwh().split('/')
+        if len(bwh) > 0:
+            return fint(bust_ptn.sub('', bwh[0]))
 
-    def bust(self, query=None):
-        bwh = self.bwh(query)
-        if bwh:
-            return fint(bwh.split('-')[0])
+    def waist(self):
+        bwh = self.bwh().split('/')
+        if len(bwh) > 0:
+            return fint(waist_ptn.sub('', bwh[1]))
 
-    def waist(self, query=None):
-        bwh = self.bwh(query)
-        if bwh:
-            return fint(bwh.split('-')[1])
+    def hip(self):
+        bwh = self.bwh().split('/')
+        if len(bwh) > 0:
+            return fint(hip_ptn.sub('', bwh[2]))
 
-    def hip(self, query=None):
-        bwh = self.bwh(query)
-        if bwh:
-            return fint(bwh.split('-')[2])
+    def bracup(self):
+        h, b, w = self.height(), self.bust(), self.waist()
+        if h and b and w and h > 10 and b > 10 and w > 10:
+            return bracalc.calc(h, b, w)['cup']
+        return ''
 
-    def bracup(self, query=None):
-        dom = pq(self.request(query))
-        ptn = re.compile(r"(?:[a-z]|[A-Z]){1}")
-        selector = 'tr th:contains(ブラのサイズ), tr th:contains(カップサイズ)'
+    def tags(self):
+        selector = 'dl dt:contains(タグ)'
+        doc = self.doc(selector).next()
+        return [i.text() for i in doc('a').items()]
 
-        r = ""
+    def comment(self):
+        selector = 'dl dt:contains(コメント)'
+        return self.doc(selector).next().next().text()
 
-        for d in dom(selector).nextAll():
-            t = pq(d).text()
-            if ptn.match(t):
-                r = ''.join(ptn.findall(t)[0].split())
 
-        if not r:
-            h, b, w = self.height(), self.bust(), self.waist()
-            if h and b and w and h > 10 and b > 10 and w > 10:
-                r = bracalc.calc(h, b, w)['cup']
+class Toon(Base):
 
-        return r
+    PATH = 'animes'
+
+    def info(self):
+        return dict(
+            name=self.name(),
+            alias=self.alias(),
+            author=self.author(),
+            works=self.works(),
+            release=self.release(),
+            url=self.url(),
+            tags=self.tags(),
+            comment=self.comment(),
+        )
+
+    def name(self):
+        selector = 'dl dt:contains(作品名)'
+        return self.doc(selector).next().text()
+
+    def alias(self):
+        sel = 'dl dt:contains(通名),dl dt:contains(略称)'
+        return self.doc(sel).next().text()
+
+    def author(self):
+        selector = 'dl dt:contains(原作者)'
+        return self.doc(selector).next().text()
+
+    def works(self):
+        selector = 'dl dt:contains(制作会社)'
+        return self.doc(selector).next().text()
+
+    def release(self):
+        selector = 'dl dt:contains(制作年)'
+        text = self.doc(selector).next().text()
+        if text:
+            return extractor.find_date(text)
+
+    def url(self):
+        selector = 'dl dt:contains(公式サイト)'
+        return self.doc(selector).next().text()
+
+    def comment(self):
+        selector = 'dl dt:contains(コメント)'
+        return self.doc(selector).next().next().text()
+
+    def tags(self):
+        selector = 'dl dt:contains(タグ)'
+        doc = self.doc(selector).next()
+        return [i.text() for i in doc('a').items()]
