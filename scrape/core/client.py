@@ -47,9 +47,9 @@ def img(uri, headers=None):
 
 
 def html(uri, headers=None):
-    content = html_cache.get(uri)
+    text = html_cache.get(uri)
 
-    if not content:
+    if not text:
         try:
             with eventlet.Timeout(10):
                 r = rq(headers or {}).get(uri, verify=False)
@@ -60,7 +60,7 @@ def html(uri, headers=None):
             return None
 
         if r.ok:
-            content = r.content
-            html_cache.set(uri, content)
+            text = r.text
+            html_cache.set(uri, text)
 
-    return content
+    return text

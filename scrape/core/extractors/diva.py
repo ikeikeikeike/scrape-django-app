@@ -11,8 +11,8 @@ ENDPOINT = settings.ENDPOINTS['actress']
 class Person(object):
 
     def get(self, letter):
-        byte = client.html(self._ujoin(letter))
-        people = json.loads(byte.decode())
+        text = client.html(self._ujoin(letter))
+        people = json.loads(text)
         return people['Actresses']
 
     def all(self):

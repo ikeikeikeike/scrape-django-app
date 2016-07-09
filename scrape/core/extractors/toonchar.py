@@ -1,37 +1,45 @@
-import re
-import json
+from os.path import join as pjoin
 
 from django.conf import settings
 
 from pyquery import PyQuery as pq
 
 from core import client
-from core import bracalc
-from core import extractor
 
-
-ENDPOINT = settings.ENDPOINTS['wikiorg']
+ENDPOINT = settings.ENDPOINTS['toonchar']
 
 
 def fint(i):
     return int(float(i))
 
 
-class Wikipedia(object):
+class Toonchar(object):
 
-    def __init__(self):
-        self._doc = None
+    def __init__(self, path, query):
+        self.query = pjoin(path, str(query))
+        self._html = None
 
-    def request(self, query):
-        if self._doc is None:
-            text = client.html(ENDPOINT + query)
-            js = json.loads(text)
+    @property
+    def html(self):
+        if self._html is None:
+            url = pjoin(ENDPOINT, self.query)
+            self._html = client.html(url)
+        return self._html
 
-            self._doc = ""
-            if 'error' not in js:
-                self._doc = js['parse']['text']['*']
+    @property
+    def doc(self):
+        return pq(self.html or None)
 
-        return self._doc
+    @property
+    def ok(self):
+        return bool(self.doc)
+
+    def name(self):
+        import ipdb; ipdb.set_trace()
+        selector = 'dl dt:contains(名前)'
+
+        text = self.doc(selector).nextAll().text()
+        return text
 
     def birthday(self, query=None):
         dom = pq(self.request(query))

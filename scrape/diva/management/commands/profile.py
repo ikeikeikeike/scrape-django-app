@@ -1,5 +1,6 @@
 import time
 
+from django.db.models import Q
 from django.core.management.base import BaseCommand
 
 from core.extractors import profile
@@ -12,8 +13,24 @@ from diva import models
 
 
 class Command(BaseCommand):
+
+    def add_arguments(self, parser):
+        parser.add_argument(
+            '--brushup',
+            action='store_true',
+            dest='brushup',
+            default=False,
+            help='For starring person',
+        )
+
     def handle(self, *args, **options):
-        for d in models.Diva.objects.order_by('updated_at'):
+        objs = models.Diva.objects
+
+        q = Q()
+        # if options['brushup']:
+        #     q = Q(appeared__gt=0)
+
+        for d in objs.filter(q).order_by('updated_at')[:100]:
             names = [d.name] + (d.alias or '').split(',')
 
             for name in filter(lambda x: x, names):
@@ -30,4 +47,4 @@ class Command(BaseCommand):
                     d.weight = d.weight or wiki.weight()
 
             d.save()
-            time.sleep(60)
+            time.sleep(77.9)
