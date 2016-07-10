@@ -79,7 +79,8 @@ class Toon(BaseModel):
     release_date = models.DateTimeField(blank=True, null=True)
     outline = models.TextField(blank=True, null=True)
 
-    tags = models.ManyToManyField('Tag', through='toons_tags')
+    tags = models.ManyToManyField('Tag', through='ToonTag')
+    chars = models.ManyToManyField('Char', through='ToonChar')
 
     class Meta:
         db_table = 'toons'
@@ -105,7 +106,8 @@ class Char(BaseModel):
     blood = models.CharField(max_length=255, blank=True, null=True)
     birthday = models.DateField(null=True)
 
-    tags = models.ManyToManyField('Tag', through='chars_tags')
+    tags = models.ManyToManyField('Tag', through='CharTag')
+    toons = models.ManyToManyField('Toon', through='ToonChar')
 
     class Meta:
         db_table = 'chars'
@@ -119,8 +121,8 @@ class Tag(BaseModel):
     orig = models.CharField(max_length=255, blank=True, null=True)
     gyou = models.CharField(max_length=255, blank=True, null=True)
 
-    chars = models.ManyToManyField('Char', through='chars_tags')
-    toons = models.ManyToManyField('Toon', through='toons_tags')
+    chars = models.ManyToManyField('Char', through='CharTag')
+    toons = models.ManyToManyField('Toon', through='ToonTag')
 
     class Meta:
         db_table = 'tags'
@@ -190,19 +192,31 @@ class ToonThumb(BaseModel):
         db_table = 'toons_thumbs'
 
 
-class ToonTag(BaseModel):
+class ToonTag(models.Model):
     toon = models.ForeignKey('Toon')
     tag = models.ForeignKey('Tag')
 
     class Meta:
+        managed = False
         db_table = 'toons_tags'
         unique_together = (('toon', 'tag'), ('tag', 'toon'),)
 
 
-class CharsTag(models.Model):
+class CharTag(models.Model):
     char = models.ForeignKey('Char')
     tag = models.ForeignKey('Tag')
 
     class Meta:
+        managed = False
         db_table = 'chars_tags'
         unique_together = (('char', 'tag'), ('tag', 'char'),)
+
+
+class ToonChar(models.Model):
+    toon = models.ForeignKey('Toon')
+    char = models.ForeignKey('Char')
+
+    class Meta:
+        managed = False
+        db_table = 'toons_chars'
+        unique_together = (('toon', 'char'), ('char', 'toon'),)
