@@ -26,9 +26,12 @@ class BaseModel(models.Model):
 
 
 class Blog(BaseModel):
-    name = models.CharField(max_length=255)
-    url = models.CharField(max_length=255)
-    rss = models.CharField(max_length=255)
+    #  user = models.ForeignKey('Users', blank=True, null=True)
+
+    name = models.CharField(max_length=255, blank=True, null=True)
+    explain = models.TextField(blank=True, null=True)
+    url = models.URLField(blank=True, null=True)
+    rss = models.URLField(blank=True, null=True)
 
     mediatype = models.CharField(max_length=255)
     contenttype = models.CharField(max_length=255)
@@ -40,11 +43,11 @@ class Blog(BaseModel):
 
 
 class Diva(BaseModel):
-    name = models.CharField(max_length=255)
+    name = models.CharField(max_length=255, null=True, blank=True)
     alias = models.CharField(max_length=255, null=True, blank=True)
-    kana = models.CharField(max_length=255)
-    romaji = models.CharField(max_length=255)
-    gyou = models.CharField(max_length=255)
+    kana = models.CharField(max_length=255, null=True, blank=True)
+    romaji = models.CharField(max_length=255, null=True, blank=True)
+    gyou = models.CharField(max_length=255, null=True, blank=True)
 
     height = models.IntegerField(null=True)
     weight = models.IntegerField(null=True)
@@ -59,3 +62,147 @@ class Diva(BaseModel):
 
     class Meta:
         db_table = 'divas'
+        unique_together = (('name', 'alias'),)
+
+
+class Toon(BaseModel):
+    name = models.CharField(unique=True, max_length=255, blank=True, null=True)
+    alias = models.CharField(max_length=255, blank=True, null=True)
+    kana = models.CharField(max_length=255, blank=True, null=True)
+    romaji = models.CharField(max_length=255, blank=True, null=True)
+    gyou = models.CharField(max_length=255, blank=True, null=True)
+
+    url = models.URLField(blank=True, null=True)
+    author = models.CharField(max_length=255, blank=True, null=True)
+    works = models.CharField(max_length=255, blank=True, null=True)
+
+    release_date = models.DateTimeField(blank=True, null=True)
+    outline = models.TextField(blank=True, null=True)
+
+    tags = models.ManyToManyField('Tag', through='toons_tags')
+
+    class Meta:
+        db_table = 'toons'
+
+
+class Char(BaseModel):
+    toon = models.ForeignKey('Toon')
+
+    name = models.CharField(max_length=255, blank=True, null=True)
+    alias = models.CharField(max_length=255, blank=True, null=True)
+    kana = models.CharField(max_length=255, blank=True, null=True)
+    romaji = models.CharField(max_length=255, blank=True, null=True)
+    gyou = models.CharField(max_length=255, blank=True, null=True)
+
+    height = models.IntegerField(null=True)
+    weight = models.IntegerField(null=True)
+
+    bust = models.IntegerField(null=True)
+    bracup = models.CharField(max_length=255, blank=True, null=True)
+    waist = models.IntegerField(null=True)
+    hip = models.IntegerField(null=True)
+
+    blood = models.CharField(max_length=255, blank=True, null=True)
+    birthday = models.DateField(null=True)
+
+    tags = models.ManyToManyField('Tag', through='chars_tags')
+
+    class Meta:
+        db_table = 'chars'
+        unique_together = (('toon', 'name'),)
+
+
+class Tag(BaseModel):
+    name = models.SlugField(unique=True, blank=True, null=True)
+    kana = models.CharField(max_length=255, blank=True, null=True)
+    romaji = models.CharField(max_length=255, blank=True, null=True)
+    orig = models.CharField(max_length=255, blank=True, null=True)
+    gyou = models.CharField(max_length=255, blank=True, null=True)
+
+    chars = models.ManyToManyField('Char', through='chars_tags')
+    toons = models.ManyToManyField('Toon', through='toons_tags')
+
+    class Meta:
+        db_table = 'tags'
+
+
+class BlogThumb(BaseModel):
+    assoc = models.OneToOneField('Blog', related_name='thumb')
+    #  assoc = models.ForeignKey('Blog', related_name='thumbs')
+
+    name = models.CharField(max_length=255, blank=True, null=True)
+    src = models.TextField(blank=True, null=True)
+    ext = models.CharField(max_length=255, blank=True, null=True)
+    mime = models.CharField(max_length=255, blank=True, null=True)
+
+    width = models.IntegerField(null=True)
+    height = models.IntegerField(null=True)
+
+    class Meta:
+        db_table = 'blogs_thumbs'
+
+
+class CharThumb(BaseModel):
+    assoc = models.OneToOneField('Char', related_name='thumb')
+    #  assoc = models.ForeignKey('Char', related_name='thumbs')
+
+    name = models.CharField(max_length=255, blank=True, null=True)
+    src = models.TextField(blank=True, null=True)
+    ext = models.CharField(max_length=255, blank=True, null=True)
+    mime = models.CharField(max_length=255, blank=True, null=True)
+
+    width = models.IntegerField(null=True)
+    height = models.IntegerField(null=True)
+
+    class Meta:
+        db_table = 'chars_thumbs'
+
+
+class TagThumb(BaseModel):
+    assoc = models.OneToOneField('Tag', related_name='thumb')
+    #  assoc = models.ForeignKey('Tag', related_name='thumbs')
+
+    name = models.CharField(max_length=255, blank=True, null=True)
+    src = models.TextField(blank=True, null=True)
+    ext = models.CharField(max_length=255, blank=True, null=True)
+    mime = models.CharField(max_length=255, blank=True, null=True)
+
+    width = models.IntegerField(null=True)
+    height = models.IntegerField(null=True)
+
+    class Meta:
+        db_table = 'tags_thumbs'
+
+
+class ToonThumb(BaseModel):
+    assoc = models.OneToOneField('Toon', related_name='thumb')
+    #  assoc = models.ForeignKey('Toon', related_name='thumbs')
+
+    name = models.CharField(max_length=255, blank=True, null=True)
+    src = models.TextField(blank=True, null=True)
+    ext = models.CharField(max_length=255, blank=True, null=True)
+    mime = models.CharField(max_length=255, blank=True, null=True)
+
+    width = models.IntegerField(null=True)
+    height = models.IntegerField(null=True)
+
+    class Meta:
+        db_table = 'toons_thumbs'
+
+
+class ToonTag(BaseModel):
+    toon = models.ForeignKey('Toon')
+    tag = models.ForeignKey('Tag')
+
+    class Meta:
+        db_table = 'toons_tags'
+        unique_together = (('toon', 'tag'), ('tag', 'toon'),)
+
+
+class CharsTag(models.Model):
+    char = models.ForeignKey('Char')
+    tag = models.ForeignKey('Tag')
+
+    class Meta:
+        db_table = 'chars_tags'
+        unique_together = (('char', 'tag'), ('tag', 'char'),)
