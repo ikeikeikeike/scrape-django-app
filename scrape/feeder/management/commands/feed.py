@@ -5,10 +5,10 @@ from django.core.cache import caches
 import eventlet
 
 from core import image
+from core import models
 from core.scraper import feed
 from core.scraper import html
 
-from blog import models
 from feeder import redis
 
 fstore = caches['feed']

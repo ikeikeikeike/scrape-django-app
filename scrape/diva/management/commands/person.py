@@ -7,7 +7,7 @@ from core.extractor import (
     separate_alias
 )
 
-from diva import models
+from core import models
 
 
 class Command(BaseCommand):

@@ -23,3 +23,39 @@ class BaseModel(models.Model):
         ordering = ["-id"]
         abstract = True
         managed = False
+
+
+class Blog(BaseModel):
+    name = models.CharField(max_length=255)
+    url = models.CharField(max_length=255)
+    rss = models.CharField(max_length=255)
+
+    mediatype = models.CharField(max_length=255)
+    contenttype = models.CharField(max_length=255)
+
+    last_modified = models.DateTimeField(blank=True, null=True)
+
+    class Meta:
+        db_table = 'blogs'
+
+
+class Diva(BaseModel):
+    name = models.CharField(max_length=255)
+    alias = models.CharField(max_length=255, null=True, blank=True)
+    kana = models.CharField(max_length=255)
+    romaji = models.CharField(max_length=255)
+    gyou = models.CharField(max_length=255)
+
+    height = models.IntegerField(null=True)
+    weight = models.IntegerField(null=True)
+
+    bust = models.IntegerField(null=True)
+    bracup = models.CharField(max_length=255, null=True, blank=True)
+    waist = models.IntegerField(null=True)
+    hip = models.IntegerField(null=True)
+
+    blood = models.CharField(max_length=255, null=True, blank=True)
+    birthday = models.DateField(null=True)
+
+    class Meta:
+        db_table = 'divas'

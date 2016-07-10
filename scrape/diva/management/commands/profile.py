@@ -9,7 +9,7 @@ from core.extractor import (
     safe_bracup,
 )
 
-from diva import models
+from core import models
 
 
 class Command(BaseCommand):
