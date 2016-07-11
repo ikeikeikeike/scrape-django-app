@@ -26,7 +26,7 @@ class BaseModel(models.Model):
 
 
 class Blog(BaseModel):
-    #  user = models.ForeignKey('Users', blank=True, null=True)
+    #  user = models.ForeignKey('Users', related_name='blogs')
 
     name = models.CharField(max_length=255, blank=True, null=True)
     explain = models.TextField(blank=True, null=True)
@@ -87,8 +87,6 @@ class Toon(BaseModel):
 
 
 class Char(BaseModel):
-    toon = models.ForeignKey('Toon')
-
     name = models.CharField(max_length=255, blank=True, null=True)
     alias = models.CharField(max_length=255, blank=True, null=True)
     kana = models.CharField(max_length=255, blank=True, null=True)
@@ -129,8 +127,7 @@ class Tag(BaseModel):
 
 
 class BlogThumb(BaseModel):
-    assoc = models.OneToOneField('Blog', related_name='thumb')
-    #  assoc = models.ForeignKey('Blog', related_name='thumbs')
+    assoc = models.ForeignKey('Blog', related_name='thumbs')
 
     name = models.CharField(max_length=255, blank=True, null=True)
     src = models.TextField(blank=True, null=True)
@@ -144,9 +141,23 @@ class BlogThumb(BaseModel):
         db_table = 'blogs_thumbs'
 
 
+class DivaThumb(BaseModel):
+    assoc = models.ForeignKey('Diva', related_name='thumbs')
+
+    name = models.CharField(max_length=255, blank=True, null=True)
+    src = models.TextField(blank=True, null=True)
+    ext = models.CharField(max_length=255, blank=True, null=True)
+    mime = models.CharField(max_length=255, blank=True, null=True)
+
+    width = models.IntegerField(null=True)
+    height = models.IntegerField(null=True)
+
+    class Meta:
+        db_table = 'divas_thumbs'
+
+
 class CharThumb(BaseModel):
-    assoc = models.OneToOneField('Char', related_name='thumb')
-    #  assoc = models.ForeignKey('Char', related_name='thumbs')
+    assoc = models.ForeignKey('Char', related_name='thumbs')
 
     name = models.CharField(max_length=255, blank=True, null=True)
     src = models.TextField(blank=True, null=True)
@@ -161,8 +172,7 @@ class CharThumb(BaseModel):
 
 
 class TagThumb(BaseModel):
-    assoc = models.OneToOneField('Tag', related_name='thumb')
-    #  assoc = models.ForeignKey('Tag', related_name='thumbs')
+    assoc = models.ForeignKey('Tag', related_name='thumbs')
 
     name = models.CharField(max_length=255, blank=True, null=True)
     src = models.TextField(blank=True, null=True)
@@ -177,8 +187,7 @@ class TagThumb(BaseModel):
 
 
 class ToonThumb(BaseModel):
-    assoc = models.OneToOneField('Toon', related_name='thumb')
-    #  assoc = models.ForeignKey('Toon', related_name='thumbs')
+    assoc = models.ForeignKey('Toon', related_name='thumbs')
 
     name = models.CharField(max_length=255, blank=True, null=True)
     src = models.TextField(blank=True, null=True)

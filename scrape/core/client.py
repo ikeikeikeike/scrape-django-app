@@ -9,7 +9,7 @@ import eventlet
 from requests import adapters
 
 img_cache = caches['tmp_image']
-html_cache = caches['tmp_html']
+any_cache = caches['tmp_anything']
 
 
 def rq(headers=None):
@@ -26,41 +26,49 @@ def rq(headers=None):
     return s
 
 
-def img(uri, headers=None):
+def img(uri, headers=None, auth=None):
     content = img_cache.get(uri)
 
     if not content:
-        try:
-            with eventlet.Timeout(10):
-                r = rq(headers or {}).get(uri, verify=False)
-        except (
-            eventlet.timeout.Timeout,
-            requests.exceptions.ConnectionError,
-        ):
-            return None
-
-        if r.ok:
+        r = _cached_request(uri, headers, auth)
+        if r and r.ok:
             content = r.content
             img_cache.set(uri, content)
 
     return content
 
 
-def html(uri, headers=None):
-    text = html_cache.get(uri)
+def json(uri, headers=None, auth=None):
+    js = any_cache.get(uri)
+
+    if not js:
+        r = _cached_request(uri, headers, auth)
+        if r and r.ok:
+            js = r.json()
+            any_cache.set(uri, js)
+
+    return js
+
+
+def html(uri, headers=None, auth=None):
+    text = any_cache.get(uri)
 
     if not text:
-        try:
-            with eventlet.Timeout(10):
-                r = rq(headers or {}).get(uri, verify=False)
-        except (
-            eventlet.timeout.Timeout,
-            requests.exceptions.ConnectionError,
-        ):
-            return None
-
-        if r.ok:
+        r = _cached_request(uri, headers, auth)
+        if r and r.ok:
             text = r.text
-            html_cache.set(uri, text)
+            any_cache.set(uri, text)
 
     return text
+
+
+def _cached_request(uri, headers=None, auth=None):
+    try:
+        with eventlet.Timeout(10):
+            r = rq(headers or {}).get(uri, verify=False, auth=auth)
+    except (
+        eventlet.timeout.Timeout,
+        requests.exceptions.ConnectionError,
+    ):
+        return None
+    return r

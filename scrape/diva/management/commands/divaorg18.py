@@ -12,7 +12,7 @@ from core import models
 
 class Command(BaseCommand):
     def handle(self, *args, **options):
-        person = diva.Person()
+        person = diva.Actresses()
         objs = models.Diva.objects
 
         for _, people in person.all().items():

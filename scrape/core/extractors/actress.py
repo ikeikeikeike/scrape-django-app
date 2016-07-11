@@ -8,11 +8,11 @@ from core import consts
 ENDPOINT = settings.ENDPOINTS['actress']
 
 
-class Person(object):
+class Actress(object):
 
     def get(self, letter):
-        text = client.html(self._ujoin(letter))
-        people = json.loads(text)
+        js = client.json(self._ujoin(letter))
+        people = json.loads(js)
         return people['Actresses']
 
     def all(self):

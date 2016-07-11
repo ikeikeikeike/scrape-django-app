@@ -86,9 +86,9 @@ CACHES = {
         'LOCATION': 'tmpimage-location',
         'TIMEOUT': 60 * 60 * 24 * 5,  # 5 days
     },
-    'tmp_html': {
+    'tmp_anything': {
         'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
-        'LOCATION': 'tmphtml-location',
+        'LOCATION': 'tmp_anything-location',
         'TIMEOUT': 60 * 60 * 1,  # 1 hours
     },
 }
