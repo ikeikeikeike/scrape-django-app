@@ -8,3 +8,5 @@ Pillow==3.2.0
 django-redis==4.4.3
 isodate==0.5.4
 eventlet==0.19.0
+dateparser==0.4.0
+regex==2016.6.24
