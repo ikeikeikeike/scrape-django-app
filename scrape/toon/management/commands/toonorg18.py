@@ -6,5 +6,6 @@ from core.extractors import org18
 
 class Command(BaseCommand):
     def handle(self, *args, **options):
-        for _, p in org18.toon().json:
+        import ipdb; ipdb.set_trace()
+        for p in org18.Toon().json:
             query.toon_upsert_by_org18(p)

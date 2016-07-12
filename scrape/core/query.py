@@ -28,8 +28,8 @@ def char_upsert_by_org18(params):
     m, _ = models.Toon.objects.get_or_create(name=p['Name'], alias=p['Alias'])
     m = set_profile(m, p)
 
-    if m['AnimeId'].get('Int64'):
-        toon = toon_upsert_by_org18(m['Anime'])
+    if p['AnimeId'].get('Int64'):
+        toon = toon_upsert_by_org18(p['Anime'])
         if not m.chars.filter(name=toon.name, alias=toon.alias).exists():
             m.toons.add(toon)
 
@@ -53,7 +53,7 @@ def toon_upsert_by_org18(params, char=None):
     m.release_date = m.release_date or p['ReleaseDate']  # XXX: maybe setting this needs to convert datetime
     m.outline = m.outline or safe_content(p['Outline'])
 
-    for char_params in m['Characters']:
+    for char_params in p['Characters']:
         char = char_upsert_by_org18(char_params)
         if not m.chars.filter(name=char.name, alias=char.alias).exists():
             m.chars.add(char)

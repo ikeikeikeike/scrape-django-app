@@ -6,5 +6,5 @@ from core.extractors import org18
 
 class Command(BaseCommand):
     def handle(self, *args, **options):
-        for _, p in org18.Diva().json:
+        for p in org18.Diva().json:
             query.diva_upsert_by_org18(p)

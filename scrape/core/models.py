@@ -66,7 +66,7 @@ class Diva(BaseModel):
 
 
 class Toon(BaseModel):
-    name = models.CharField(unique=True, max_length=255, blank=True, null=True)
+    name = models.CharField(max_length=255, blank=True, null=True)
     alias = models.CharField(max_length=255, blank=True, null=True)
     kana = models.CharField(max_length=255, blank=True, null=True)
     romaji = models.CharField(max_length=255, blank=True, null=True)
@@ -84,6 +84,7 @@ class Toon(BaseModel):
 
     class Meta:
         db_table = 'toons'
+        unique_together = (('name', 'alias'),)
 
 
 class Char(BaseModel):
@@ -109,7 +110,7 @@ class Char(BaseModel):
 
     class Meta:
         db_table = 'chars'
-        unique_together = (('toon', 'name'),)
+        unique_together = (('name', 'alias'),)
 
 
 class Tag(BaseModel):

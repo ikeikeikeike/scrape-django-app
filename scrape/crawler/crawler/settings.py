@@ -1,3 +1,9 @@
+import sys
+sys.path.append('../')
+
+import os
+os.environ['DJANGO_SETTINGS_MODULE'] = 'scrape.settings_local'
+
 # Scrapy settings for crawler project
 #
 # For simplicity, this file contains only settings considered important or
