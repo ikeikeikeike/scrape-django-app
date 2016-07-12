@@ -1,8 +1,11 @@
-import sys
-sys.path.append('../')
-
 import os
+import sys
+#  import django
+
+sys.path.append('../../..')
 os.environ['DJANGO_SETTINGS_MODULE'] = 'scrape.settings_local'
+#  django.setup()
+
 
 # Scrapy settings for crawler project
 #
