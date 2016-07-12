@@ -6,6 +6,7 @@ from os.path import splitext, basename
 
 from django.utils.html import strip_tags
 
+import arrow
 import regex
 import dateparser
 
@@ -79,6 +80,21 @@ def safe_bracup(word):
     if word:
         return bracup_ptn.sub('', word.upper())
     return word
+
+
+def safe_datetime(word):
+    if not word:
+        return word
+
+    try:
+        word = arrow.get(word)
+    except arrow.ParserError:
+        return None
+
+    if word < arrow.get('1000-01-01'):
+        return None
+
+    return word.datetime
 
 
 def separate_alias(name):

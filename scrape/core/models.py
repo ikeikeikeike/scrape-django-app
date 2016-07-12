@@ -208,6 +208,7 @@ class ToonTag(models.Model):
 
     class Meta:
         managed = False
+        auto_created = True
         db_table = 'toons_tags'
         unique_together = (('toon', 'tag'), ('tag', 'toon'),)
 
@@ -218,6 +219,7 @@ class CharTag(models.Model):
 
     class Meta:
         managed = False
+        auto_created = True
         db_table = 'chars_tags'
         unique_together = (('char', 'tag'), ('tag', 'char'),)
 
@@ -228,5 +230,6 @@ class ToonChar(models.Model):
 
     class Meta:
         managed = False
+        auto_created = True
         db_table = 'toons_chars'
         unique_together = (('toon', 'char'), ('char', 'toon'),)
