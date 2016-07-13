@@ -30,7 +30,7 @@ def img(uri, headers=None, auth=None):
     content = img_cache.get(uri)
 
     if not content:
-        r = _cached_request(uri, headers, auth)
+        r = cached_request(uri, headers, auth)
         if r and r.ok:
             content = r.content
             img_cache.set(uri, content)
