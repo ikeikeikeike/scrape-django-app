@@ -2,6 +2,7 @@ import re
 from os.path import join as pjoin
 
 from django.conf import settings
+from django.core.cache import caches
 
 from pyquery import PyQuery as pq
 
@@ -16,6 +17,20 @@ height_ptn = re.compile(r'cm', re.IGNORECASE)
 bust_ptn = re.compile(r'b', re.IGNORECASE)
 waist_ptn = re.compile(r'w', re.IGNORECASE)
 hip_ptn = re.compile(r'h', re.IGNORECASE)
+
+any_cache = caches['tmp_anything']
+
+
+def html(uri, headers=None, auth=None):
+    text = any_cache.get(uri)
+
+    if not text:
+        r = client.cached_request(uri, headers, auth)
+        if r and r.ok:
+            text = r.text
+            any_cache.set(uri, text)
+
+    return text
 
 
 def fint(i):
@@ -34,7 +49,7 @@ class Base(object):
     def html(self):
         if self._html is None:
             url = self._process_url()
-            self._html = client.html(url)
+            self._html = html(url)
         return self._html
 
     @property

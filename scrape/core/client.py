@@ -42,7 +42,7 @@ def json(uri, headers=None, auth=None):
     js = any_cache.get(uri)
 
     if not js:
-        r = _cached_request(uri, headers, auth)
+        r = cached_request(uri, headers, auth)
         if r and r.ok:
             js = r.json()
             any_cache.set(uri, js)
@@ -51,18 +51,18 @@ def json(uri, headers=None, auth=None):
 
 
 def html(uri, headers=None, auth=None):
-    text = any_cache.get(uri)
+    content = any_cache.get(uri)
 
-    if not text:
-        r = _cached_request(uri, headers, auth)
+    if not content:
+        r = cached_request(uri, headers, auth)
         if r and r.ok:
-            text = r.text
-            any_cache.set(uri, text)
+            content = r.content
+            any_cache.set(uri, content)
 
-    return text
+    return content
 
 
-def _cached_request(uri, headers=None, auth=None):
+def cached_request(uri, headers=None, auth=None):
     try:
         with eventlet.Timeout(10):
             r = rq(headers or {}).get(uri, verify=False, auth=auth)

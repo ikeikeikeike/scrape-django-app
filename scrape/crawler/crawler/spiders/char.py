@@ -31,7 +31,6 @@ class Char(CrawlSpider):
     )
 
     def parse_item(self, response):
-        import ipdb; ipdb.set_trace()
         self.logger.info('Hi, this is an item page! %s', response.url)
 
         item = scrapy.Item()
