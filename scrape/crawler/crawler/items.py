@@ -2,11 +2,14 @@
 #
 # See documentation in:
 # http://doc.scrapy.org/en/latest/topics/items.html
+from scrapy_djangoitem import DjangoItem
 
-import scrapy
+from core import models
 
 
-class CrawlerItem(scrapy.Item):
-    # define the fields for your item here like:
-    # name = scrapy.Field()
-    pass
+class CharItem(DjangoItem):
+    django_model = models.Char
+
+
+class ToonItem(DjangoItem):
+    django_model = models.Toon

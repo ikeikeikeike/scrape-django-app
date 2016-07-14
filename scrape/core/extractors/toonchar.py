@@ -83,9 +83,9 @@ class Char(Base):
             blood=self.blood(),
             height=self.height(),
             weight=self.weight(),
-            bust=self.bust(),
-            waist=self.waist(),
-            hip=self.hip(),
+            bust=self.bust(),  # XXX:
+            waist=self.waist(),  # XXX:
+            hip=self.hip(),  # XXX:
             bracup=self.bracup(),
             comment=self.comment(),
             tags=self.tags(),
@@ -136,17 +136,17 @@ class Char(Base):
 
     def bust(self):
         bwh = self.bwh().split('/')
-        if len(bwh) > 0:
+        if len(bwh) > 1:
             return fint(bust_ptn.sub('', bwh[0]))
 
     def waist(self):
         bwh = self.bwh().split('/')
-        if len(bwh) > 0:
+        if len(bwh) > 1:
             return fint(waist_ptn.sub('', bwh[1]))
 
     def hip(self):
         bwh = self.bwh().split('/')
-        if len(bwh) > 0:
+        if len(bwh) > 1:
             return fint(hip_ptn.sub('', bwh[2]))
 
     def bracup(self):

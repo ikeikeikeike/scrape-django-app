@@ -1,4 +1,3 @@
-import scrapy
 from scrapy.spiders import (
     Rule,
     CrawlSpider,
@@ -9,6 +8,10 @@ from django.conf import settings
 
 import tldextract
 
+from core.extractors import toonchar
+
+from crawler import items
+
 
 ENDPOINT = settings.ENDPOINTS['toonchar']
 
@@ -16,7 +19,7 @@ ENDPOINT = settings.ENDPOINTS['toonchar']
 class Char(CrawlSpider):
     name = 'char'
 
-    allowed_domains = [tldextract.extract(ENDPOINT).domain]
+    allowed_domains = [tldextract.extract(ENDPOINT).registered_domain]
     start_urls = (ENDPOINT, )
 
     rules = (
@@ -27,14 +30,14 @@ class Char(CrawlSpider):
         # Extract links matching 'item.php' and parse them with the spider's method parse_item
         #  Rule(LinkExtractor(allow=('item\.php', )), callback='parse_item'),
 
-        Rule(LinkExtractor(allow=(r'characters/', )), callback='parse_item'),
+        Rule(LinkExtractor(allow=(r'characters/\d+', )), callback='parse_item'),
     )
 
     def parse_item(self, response):
+        import ipdb; ipdb.set_trace()
         self.logger.info('Hi, this is an item page! %s', response.url)
+        char = toonchar.Char(response.url.split('/')[-1])
 
-        item = scrapy.Item()
-        item['id'] = response.xpath('//td[@id="item_id"]/text()').re(r'ID: (\d+)')
-        item['name'] = response.xpath('//td[@id="item_name"]/text()').extract()
-        item['description'] = response.xpath('//td[@id="item_description"]/text()').extract()
+        item = items.CharItem()
+        item.update(char.info())
         return item
