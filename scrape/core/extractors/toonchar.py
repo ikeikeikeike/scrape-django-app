@@ -21,18 +21,6 @@ hip_ptn = re.compile(r'h', re.IGNORECASE)
 any_cache = caches['tmp_anything']
 
 
-def html(uri, headers=None, auth=None):
-    text = any_cache.get(uri)
-
-    if not text:
-        r = client.cached_request(uri, headers, auth)
-        if r and r.ok:
-            text = r.text
-            any_cache.set(uri, text)
-
-    return text
-
-
 def fint(i):
     return int(float(i))
 
@@ -49,7 +37,7 @@ class Base(object):
     def html(self):
         if self._html is None:
             url = self._process_url()
-            self._html = html(url)
+            self._html = client.text(url)
         return self._html
 
     @property
