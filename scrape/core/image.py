@@ -43,6 +43,7 @@ class Image(object):
 
     def info(self):
         return dict(
+            src=self.url,
             ext=self.format().lower(),
             width=self.width(),
             height=self.height(),
