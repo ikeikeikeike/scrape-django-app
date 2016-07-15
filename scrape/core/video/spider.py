@@ -56,6 +56,10 @@ class SpiderBase(object):
         return bool(self.doc)
 
     def info(self):
+        # save img info
+        for url in self.extract_image_urls() or []:
+            client.img(url)
+
         return dict(
             url=self.url,
             name=self.extract_name(),

@@ -38,6 +38,16 @@ class Image(object):
     def height(self):
         return self.image.height
 
+    def format(self):
+        return self.image.format
+
+    def info(self):
+        return dict(
+            ext=self.format().lower(),
+            width=self.width(),
+            height=self.height(),
+        )
+
 
 class Images(object):
 

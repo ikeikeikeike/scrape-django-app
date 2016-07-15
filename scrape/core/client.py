@@ -8,8 +8,11 @@ import eventlet
 
 from requests import adapters
 
+from . import image
+
 img_cache = caches['tmp_image']
 any_cache = caches['tmp_anything']
+img_store = caches['imginfo']
 
 
 def rq(headers=None):
@@ -34,6 +37,7 @@ def img(uri, headers=None, auth=None):
         if r and r.ok:
             content = r.content
             img_cache.set(uri, content)
+            img_store.set(uri, image.Image(uri).info())  # save img info
 
     return content
 

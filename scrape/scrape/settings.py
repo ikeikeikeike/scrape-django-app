@@ -91,6 +91,12 @@ CACHES = {
         'LOCATION': 'tmp_anything-location',
         'TIMEOUT': 60 * 60 * 1,  # 1 hours
     },
+    'imginfo': {
+        'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
+        'LOCATION': 'imginfo-location',
+        'TIMEOUT': 60 * 60 * 24 * 5,  # 5 days
+        'KEY_FUNCTION': lambda key, key_prefix, version: key,
+    },
 }
 
 LANGUAGE_CODE = 'en-us'
