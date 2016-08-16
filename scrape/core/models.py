@@ -60,6 +60,8 @@ class Diva(BaseModel):
     blood = models.CharField(max_length=255, null=True, blank=True)
     birthday = models.DateField(null=True)
 
+    outline = models.TextField(blank=True, null=True)
+
     class Meta:
         db_table = 'divas'
         unique_together = (('name', 'alias'),)
@@ -105,6 +107,8 @@ class Char(BaseModel):
     blood = models.CharField(max_length=255, blank=True, null=True)
     birthday = models.DateField(null=True)
 
+    outline = models.TextField(blank=True, null=True)
+
     tags = models.ManyToManyField('Tag', through='CharTag')
     toons = models.ManyToManyField('Toon', through='ToonChar')
 
@@ -119,6 +123,8 @@ class Tag(BaseModel):
     romaji = models.CharField(max_length=255, blank=True, null=True)
     orig = models.CharField(max_length=255, blank=True, null=True)
     gyou = models.CharField(max_length=255, blank=True, null=True)
+
+    outline = models.TextField(blank=True, null=True)
 
     chars = models.ManyToManyField('Char', through='CharTag')
     toons = models.ManyToManyField('Toon', through='ToonTag')
