@@ -25,6 +25,77 @@ class BaseModel(models.Model):
         managed = False
 
 
+class Antenna(BaseModel):
+    tags = models.ManyToManyField('Tag', through='AntennaTag')
+    divas = models.ManyToManyField('Diva', through='AntennaDiva')
+    toons = models.ManyToManyField('Toon', through='AntennaToon')
+
+    blog = models.ForeignKey('Blog', related_name='antennas')
+    metadata = models.ForeignKey('Metadata', related_name='antennas')
+    entry = models.ForeignKey('Entry', related_name='antennas')
+    video = models.ForeignKey('Video', related_name='antennas')
+    picture = models.ForeignKey('Picture', related_name='antennas')
+    #  summary = models.ForeignKey('Summary', related_name='antennas')
+
+    class Meta:
+        db_table = 'antennas'
+
+
+class Entry(BaseModel):
+    class Meta:
+        db_table = 'entries'
+
+
+class Video(BaseModel):
+    class Meta:
+        db_table = 'videos'
+
+
+class Picture(BaseModel):
+    class Meta:
+        db_table = 'pictures'
+
+#  class Summary(BaseModel):
+
+
+class VideoMetadata(BaseModel):
+    video = models.ForeignKey('Video', related_name='metadatas')
+    site = models.ForeignKey('Site', related_name='metadatas')
+
+    url = models.TextField(blank=True, null=True)
+    title = models.TextField(blank=True, null=True)
+    content = models.TextField(blank=True, null=True)
+    embed_code = models.TextField(blank=True, null=True)
+    duration = models.IntegerField(null=True)
+
+    class Meta:
+        db_table = 'video_metadatas'
+
+
+class Metadata(BaseModel):
+    url = models.TextField(blank=True, null=True)
+    title = models.TextField(blank=True, null=True)
+    content = models.TextField(blank=True, null=True)
+    seo_title = models.TextField(blank=True, null=True)
+    seo_content = models.TextField(blank=True, null=True)
+    creator = models.CharField(max_length=255, blank=True, null=True)
+    publisher = models.CharField(max_length=255, blank=True, null=True)
+    published_at = models.DateTimeField(blank=True, null=True)
+
+    class Meta:
+        db_table = 'metadatas'
+
+
+class Site(BaseModel):
+    name = models.CharField(max_length=255, blank=True, null=True)
+    url = models.CharField(max_length=255, blank=True, null=True)
+    domain = models.CharField(max_length=255, blank=True, null=True)
+    rss = models.CharField(max_length=255, blank=True, null=True)
+
+    class Meta:
+        db_table = 'sites'
+
+
 class Blog(BaseModel):
     #  user = models.ForeignKey('Users', related_name='blogs')
 
@@ -133,6 +204,51 @@ class Tag(BaseModel):
         db_table = 'tags'
 
 
+class EntryThumb(BaseModel):
+    assoc = models.ForeignKey('Entry', related_name='thumbs')
+
+    name = models.CharField(max_length=255, blank=True, null=True)
+    src = models.TextField(blank=True, null=True)
+    ext = models.CharField(max_length=255, blank=True, null=True)
+    mime = models.CharField(max_length=255, blank=True, null=True)
+
+    width = models.IntegerField(null=True)
+    height = models.IntegerField(null=True)
+
+    class Meta:
+        db_table = 'entries_thumbs'
+
+
+class PictureThumb(BaseModel):
+    assoc = models.ForeignKey('Picture', related_name='thumbs')
+
+    name = models.CharField(max_length=255, blank=True, null=True)
+    src = models.TextField(blank=True, null=True)
+    ext = models.CharField(max_length=255, blank=True, null=True)
+    mime = models.CharField(max_length=255, blank=True, null=True)
+
+    width = models.IntegerField(null=True)
+    height = models.IntegerField(null=True)
+
+    class Meta:
+        db_table = 'pictures_thumbs'
+
+
+class VideoMetadataThumb(BaseModel):
+    assoc = models.ForeignKey('VideoMetadata', related_name='thumbs')
+
+    name = models.CharField(max_length=255, blank=True, null=True)
+    src = models.TextField(blank=True, null=True)
+    ext = models.CharField(max_length=255, blank=True, null=True)
+    mime = models.CharField(max_length=255, blank=True, null=True)
+
+    width = models.IntegerField(null=True)
+    height = models.IntegerField(null=True)
+
+    class Meta:
+        db_table = 'video_metadatas_thumbs'
+
+
 class BlogThumb(BaseModel):
     assoc = models.ForeignKey('Blog', related_name='thumbs')
 
@@ -208,6 +324,21 @@ class ToonThumb(BaseModel):
         db_table = 'toons_thumbs'
 
 
+class SiteThumb(BaseModel):
+    assoc = models.ForeignKey('Site', related_name='thumbs')
+
+    name = models.CharField(max_length=255, blank=True, null=True)
+    src = models.TextField(blank=True, null=True)
+    ext = models.CharField(max_length=255, blank=True, null=True)
+    mime = models.CharField(max_length=255, blank=True, null=True)
+
+    width = models.IntegerField(null=True)
+    height = models.IntegerField(null=True)
+
+    class Meta:
+        db_table = 'sites_thumbs'
+
+
 class ToonTag(models.Model):
     toon = models.ForeignKey('Toon')
     tag = models.ForeignKey('Tag')
@@ -239,3 +370,36 @@ class ToonChar(models.Model):
         auto_created = True
         db_table = 'toons_chars'
         unique_together = (('toon', 'char'), ('char', 'toon'),)
+
+
+class AntennaTag(models.Model):
+    antenna = models.ForeignKey('Antenna')
+    tag = models.ForeignKey('Tag')
+
+    class Meta:
+        managed = False
+        auto_created = True
+        db_table = 'antennas_tags'
+        unique_together = (('antenna', 'tag'), ('tag', 'antenna'),)
+
+
+class AntennaDiva(models.Model):
+    antenna = models.ForeignKey('Antenna')
+    diva = models.ForeignKey('Diva')
+
+    class Meta:
+        managed = False
+        auto_created = True
+        db_table = 'antennas_divas'
+        unique_together = (('antenna', 'diva'), ('diva', 'antenna'),)
+
+
+class AntennaToon(models.Model):
+    antenna = models.ForeignKey('Antenna')
+    toon = models.ForeignKey('Toon')
+
+    class Meta:
+        managed = False
+        auto_created = True
+        db_table = 'antennas_toons'
+        unique_together = (('antenna', 'toon'), ('toon', 'antenna'),)

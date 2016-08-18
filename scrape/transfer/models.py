@@ -24,6 +24,8 @@ class BaseModel(models.Model):
 
 
 class Anime(BaseModel):
+    icon = models.ForeignKey('Image', related_name='Animes')
+
     name = models.CharField(unique=True, max_length=128)
     alias = models.CharField(max_length=128, blank=True, null=True)
     kana = models.CharField(max_length=128, blank=True, null=True)
@@ -36,7 +38,6 @@ class Anime(BaseModel):
     outline = models.TextField(blank=True, null=True)
     created = models.DateTimeField()
     updated = models.DateTimeField()
-    icon_id = models.BigIntegerField(unique=True, blank=True, null=True)
     pictures_count = models.IntegerField()
     html = models.TextField(blank=True, null=True)
     html_expire = models.DateTimeField(blank=True, null=True)
@@ -47,6 +48,9 @@ class Anime(BaseModel):
 
 
 class Blog(BaseModel):
+    user = models.ForeignKey('User', related_name='blogs')
+    icon = models.ForeignKey('Image', related_name='blogs')
+
     rss = models.CharField(unique=True, max_length=255, blank=True, null=True)
     url = models.CharField(max_length=255, blank=True, null=True)
     name = models.CharField(max_length=255, blank=True, null=True)
@@ -55,8 +59,7 @@ class Blog(BaseModel):
     last_modified = models.DateTimeField(blank=True, null=True)
     created = models.DateTimeField()
     updated = models.DateTimeField()
-    user_id = models.BigIntegerField(blank=True, null=True)
-    icon_id = models.BigIntegerField(unique=True, blank=True, null=True)
+
     verify_link = models.IntegerField(blank=True, null=True)
     verify_rss = models.IntegerField(blank=True, null=True)
     verify_parts = models.IntegerField(blank=True, null=True)
@@ -67,12 +70,33 @@ class Blog(BaseModel):
     verify_video_link = models.IntegerField(blank=True, null=True)
     is_ban = models.CharField(max_length=255)
 
+    @property
+    def ex_adsensetype(self):
+        if not self.adsensetype:
+            return ''
+        elif self.adsensetype == 'movie':
+            return 'movie'
+        elif self.adsensetype == 'image':
+            return 'image'
+
+    @property
+    def ex_mediatype(self):
+        if not self.mediatype:
+            return ''
+        elif self.mediatype == '2d':
+            return 'second_dimension'
+        elif self.mediatype == '3d':
+            return 'third_dimention'
+
     class Meta:
         managed = False
         db_table = 'blog'
 
 
 class Character(BaseModel):
+    icon = models.ForeignKey('Image', related_name='characters')
+    anime = models.ForeignKey('Anime', related_name='characters')
+
     product = models.CharField(max_length=128)
     name = models.CharField(max_length=128)
     kana = models.CharField(max_length=128, blank=True, null=True)
@@ -89,9 +113,7 @@ class Character(BaseModel):
     outline = models.TextField(blank=True, null=True)
     created = models.DateTimeField()
     updated = models.DateTimeField()
-    icon_id = models.BigIntegerField(unique=True, blank=True, null=True)
     pictures_count = models.IntegerField()
-    anime_id = models.BigIntegerField(blank=True, null=True)
     html = models.TextField(blank=True, null=True)
     html_expire = models.DateTimeField(blank=True, null=True)
 
@@ -102,6 +124,9 @@ class Character(BaseModel):
 
 
 class Diva(BaseModel):
+    videos = models.ManyToManyField('Video', through='VideoDiva')
+    icon = models.ForeignKey('Image', related_name='divas')
+
     name = models.CharField(unique=True, max_length=128)
     kana = models.CharField(max_length=128, blank=True, null=True)
     romaji = models.CharField(max_length=128, blank=True, null=True)
@@ -117,7 +142,6 @@ class Diva(BaseModel):
     outline = models.TextField(blank=True, null=True)
     created = models.DateTimeField()
     updated = models.DateTimeField()
-    icon_id = models.BigIntegerField(unique=True, blank=True, null=True)
     videos_count = models.IntegerField()
     html = models.TextField(blank=True, null=True)
     html_expire = models.DateTimeField(blank=True, null=True)
@@ -128,6 +152,10 @@ class Diva(BaseModel):
 
 
 class Entry(BaseModel):
+    blog = models.ForeignKey('Blog', related_name='entries')
+    tags = models.ManyToManyField('Tag', through='EntryTag')
+    images = models.ManyToManyField('Image', through='EntryImage')
+
     url = models.TextField()
     title = models.CharField(max_length=255, blank=True, null=True)
     content = models.TextField(blank=True, null=True)
@@ -137,10 +165,10 @@ class Entry(BaseModel):
     creator = models.CharField(max_length=255, blank=True, null=True)
     publisher = models.CharField(max_length=255, blank=True, null=True)
     published_at = models.DateTimeField(blank=True, null=True)
+
     q = models.TextField(blank=True, null=True)
     created = models.DateTimeField()
     updated = models.DateTimeField()
-    blog_id = models.BigIntegerField()
     is_penalty = models.BooleanField()
     page_view = models.BigIntegerField()
     is_ban = models.CharField(max_length=255)
@@ -151,32 +179,17 @@ class Entry(BaseModel):
 
 
 class EntryImage(BaseModel):
-    image_id = models.BigIntegerField()
-    entry_id = models.BigIntegerField()
+    image = models.ForeignKey('Image')
+    entry = models.ForeignKey('Entry')
 
     class Meta:
         managed = False
         db_table = 'entry_image'
 
 
-class EntryRanking(BaseModel):
-    begin_name = models.CharField(max_length=255)
-    begin_time = models.DateTimeField()
-    rank = models.BigIntegerField()
-    page_view = models.BigIntegerField()
-    created = models.DateTimeField()
-    updated = models.DateTimeField()
-    entry_id = models.BigIntegerField()
-
-    class Meta:
-        managed = False
-        db_table = 'entry_ranking'
-        unique_together = (('begin_name', 'begin_time', 'entry_id'),)
-
-
 class EntryTag(BaseModel):
-    tag_id = models.BigIntegerField()
-    entry_id = models.BigIntegerField()
+    tag = models.ForeignKey('Tag')
+    entry = models.ForeignKey('Entry')
 
     class Meta:
         managed = False
@@ -194,6 +207,9 @@ class GooseDbVersion(BaseModel):
 
 
 class Image(BaseModel):
+    entries = models.ManyToManyField('Entry', through='EntryImage')
+    picture = models.ForeignKey('Picture', related_name='images')
+
     name = models.CharField(max_length=255, blank=True, null=True)
     src = models.CharField(max_length=255, blank=True, null=True)
     ext = models.CharField(max_length=255, blank=True, null=True)
@@ -202,7 +218,6 @@ class Image(BaseModel):
     height = models.IntegerField(blank=True, null=True)
     created = models.DateTimeField()
     updated = models.DateTimeField()
-    picture_id = models.BigIntegerField(blank=True, null=True)
 
     class Meta:
         managed = False
@@ -210,10 +225,12 @@ class Image(BaseModel):
 
 
 class Picture(BaseModel):
+    characters = models.ManyToManyField('Character', through='PictureCharacter')
+    entry = models.ForeignKey('Entry', related_name='pictures')
+    anime = models.ForeignKey('Anime', related_name='pictures')
+
     created = models.DateTimeField()
     updated = models.DateTimeField()
-    entry_id = models.BigIntegerField(unique=True, blank=True, null=True)
-    anime_id = models.BigIntegerField(blank=True, null=True)
     page_view = models.BigIntegerField()
     image_count = models.IntegerField()
 
@@ -223,27 +240,12 @@ class Picture(BaseModel):
 
 
 class PictureCharacter(BaseModel):
-    character_id = models.BigIntegerField()
-    picture_id = models.BigIntegerField()
+    character = models.ForeignKey('Character')
+    picture = models.ForeignKey('Picture')
 
     class Meta:
         managed = False
         db_table = 'picture_character'
-
-
-class PictureRanking(BaseModel):
-    begin_name = models.CharField(max_length=255)
-    begin_time = models.DateTimeField()
-    rank = models.BigIntegerField()
-    page_view = models.BigIntegerField()
-    created = models.DateTimeField()
-    updated = models.DateTimeField()
-    picture_id = models.BigIntegerField()
-
-    class Meta:
-        managed = False
-        db_table = 'picture_ranking'
-        unique_together = (('begin_name', 'begin_time', 'picture_id'),)
 
 
 class Score(BaseModel):
@@ -262,12 +264,13 @@ class Score(BaseModel):
 
 
 class Site(BaseModel):
+    icon = models.ForeignKey('Image', related_name='Sites')
+
     name = models.CharField(max_length=255, blank=True, null=True)
     domain = models.CharField(unique=True, max_length=255)
     outline = models.TextField(blank=True, null=True)
     created = models.DateTimeField()
     updated = models.DateTimeField()
-    icon_id = models.BigIntegerField(unique=True, blank=True, null=True)
 
     class Meta:
         managed = False
@@ -286,12 +289,14 @@ class Summary(BaseModel):
 
 
 class Tag(BaseModel):
+    entries = models.ManyToManyField('Entry', through='EntryTag')
+    image = models.ForeignKey('Image', related_name='tags')
+
     name = models.CharField(unique=True, max_length=255)
     kana = models.CharField(max_length=255, blank=True, null=True)
     romaji = models.CharField(max_length=255, blank=True, null=True)
     created = models.DateTimeField()
     updated = models.DateTimeField()
-    image_id = models.BigIntegerField(unique=True, blank=True, null=True)
 
     class Meta:
         managed = False
@@ -328,13 +333,16 @@ class User(BaseModel):
 
 
 class Video(BaseModel):
+    divas = models.ManyToManyField('Diva', through='VideoDiva')
+    entry = models.ForeignKey('Entry', related_name='videos')
+    site = models.ForeignKey('Site', related_name='videos')
+
     url = models.CharField(max_length=255, blank=True, null=True)
     code = models.TextField(blank=True, null=True)
     duration = models.IntegerField()
     created = models.DateTimeField()
     updated = models.DateTimeField()
-    entry_id = models.BigIntegerField(unique=True, blank=True, null=True)
-    site_id = models.BigIntegerField(blank=True, null=True)
+
     page_view = models.BigIntegerField()
 
     class Meta:
@@ -343,19 +351,32 @@ class Video(BaseModel):
 
 
 class VideoCode(BaseModel):
+    video = models.ForeignKey('Video', related_name='video_codes')
+
     name = models.TextField()
     created = models.DateTimeField()
     updated = models.DateTimeField()
-    video_id = models.BigIntegerField()
 
     class Meta:
         managed = False
         db_table = 'video_code'
 
 
+class VideoUrl(BaseModel):
+    video = models.ForeignKey('Video', related_name='video_urls')
+
+    name = models.CharField(max_length=255)
+    created = models.DateTimeField()
+    updated = models.DateTimeField()
+
+    class Meta:
+        managed = False
+        db_table = 'video_url'
+
+
 class VideoDiva(BaseModel):
-    diva_id = models.BigIntegerField()
-    video_id = models.BigIntegerField()
+    diva = models.ForeignKey('Diva')
+    video = models.ForeignKey('Video')
 
     class Meta:
         managed = False
@@ -363,17 +384,33 @@ class VideoDiva(BaseModel):
 
 
 class VideoMeta(BaseModel):
+    video = models.ForeignKey('Video', related_name='video_metas')
+    site = models.ForeignKey('Site', related_name='video_metas')
+
     url = models.CharField(max_length=255, blank=True, null=True)
     code = models.TextField()
     duration = models.IntegerField()
     created = models.DateTimeField()
     updated = models.DateTimeField()
-    video_id = models.BigIntegerField()
-    site_id = models.BigIntegerField(blank=True, null=True)
 
     class Meta:
         managed = False
         db_table = 'video_meta'
+
+
+class EntryRanking(BaseModel):
+    begin_name = models.CharField(max_length=255)
+    begin_time = models.DateTimeField()
+    rank = models.BigIntegerField()
+    page_view = models.BigIntegerField()
+    created = models.DateTimeField()
+    updated = models.DateTimeField()
+    entry_id = models.BigIntegerField()
+
+    class Meta:
+        managed = False
+        db_table = 'entry_ranking'
+        unique_together = (('begin_name', 'begin_time', 'entry_id'),)
 
 
 class VideoRanking(BaseModel):
@@ -391,12 +428,17 @@ class VideoRanking(BaseModel):
         unique_together = (('begin_name', 'begin_time', 'video_id'),)
 
 
-class VideoUrl(BaseModel):
-    name = models.CharField(max_length=255)
+class PictureRanking(BaseModel):
+    begin_name = models.CharField(max_length=255)
+    begin_time = models.DateTimeField()
+    rank = models.BigIntegerField()
+    page_view = models.BigIntegerField()
     created = models.DateTimeField()
     updated = models.DateTimeField()
-    video_id = models.BigIntegerField()
+
+    picture_id = models.BigIntegerField()
 
     class Meta:
         managed = False
-        db_table = 'video_url'
+        db_table = 'picture_ranking'
+        unique_together = (('begin_name', 'begin_time', 'picture_id'),)

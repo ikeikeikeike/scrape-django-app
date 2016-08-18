@@ -7,14 +7,42 @@ from transfer import models
 class Command(BaseCommand):
     def handle(self, *args, **options):
         tag()
+        site()
         diva()
-        char()
         toon()
 
 
-def char():
-    qs = models.Character.objects.using('transfer').order_by('id').all()
+def site():
+    qs = models.Site.objects.using('transfer').order_by('id').all()
     for obj in qs:
+        md, c = core_models.Site.objects.get_or_create(domain=obj.domain)
+        if c is True:
+            md.name = obj.name
+            md.domain = obj.domain
+            #  md.url =
+            #  md.rss =
+
+            md.inserted_at = obj.created
+            md.updated_at = obj.updated
+
+            img = obj.icon
+            core_models.SiteThumb.objects.create(
+                assoc_id=md.id,
+                name=img.name,
+                src=img.src,
+                ext=img.ext,
+                mime=img.mime,
+                width=img.width,
+                height=img.height
+            )
+
+            md.save()
+
+
+def char(characters):
+    chars = []
+
+    for obj in characters:
         md, c = core_models.Char.objects.get_or_create(name=obj.name)
         if c is True:
             md.name = obj.name
@@ -37,10 +65,29 @@ def char():
             #  md.outline = obj.outline
             md.product = obj.product
 
-            md.created = obj.created
-            md.updated = obj.updated
+            md.inserted_at = obj.created
+            md.updated_at = obj.updated
             #  md.icon_id =.icon_id
+
+            try:
+                img = obj.icon
+                core_models.CharThumb.objects.create(
+                    assoc_id=md.id,
+                    name=img.name,
+                    src=img.src,
+                    ext=img.ext,
+                    mime=img.mime,
+                    width=img.width,
+                    height=img.height
+                )
+            except models.Image.DoesNotExist:
+                pass
+
             md.save()
+
+        chars.append(md)
+
+    return chars
 
 
 def tag():
@@ -57,8 +104,22 @@ def tag():
             #  md.gyou = obj.gyou
             #  md.outline = obj.outline
 
-            md.created = obj.created
-            md.updated = obj.updated
+            md.inserted_at = obj.created
+            md.updated_at = obj.updated
+
+            try:
+                img = obj.image
+                core_models.TagThumb.objects.create(
+                    assoc_id=md.id,
+                    name=img.name,
+                    src=img.src,
+                    ext=img.ext,
+                    mime=img.mime,
+                    width=img.width,
+                    height=img.height
+                )
+            except models.Image.DoesNotExist:
+                pass
 
             md.save()
 
@@ -81,10 +142,30 @@ def toon():
             md.release_date = obj.release_date
             md.outline = obj.outline
 
-            md.created = obj.created
-            md.updated = obj.updated
+            md.inserted_at = obj.created
+            md.updated_at = obj.updated
+
+            try:
+                img = obj.icon
+                core_models.ToonThumb.objects.create(
+                    assoc_id=md.id,
+                    name=img.name,
+                    src=img.src,
+                    ext=img.ext,
+                    mime=img.mime,
+                    width=img.width,
+                    height=img.height
+                )
+            except models.Image.DoesNotExist:
+                pass
 
             md.save()
+
+        for chh in char(obj.characters.all()):
+            md.chars.add(chh)
+
+    qs = models.Character.objects.using('transfer').order_by('id').all()
+    char(qs)
 
 
 def diva():
@@ -111,7 +192,22 @@ def diva():
 
             #  md.outline = obj.outline
 
-            md.created = obj.created
-            md.updated = obj.updated
+            md.inserted_at = obj.created
+            md.updated_at = obj.updated
             #  md.icon_id =.icon_id
+
+            try:
+                img = obj.icon
+                core_models.DivaThumb.objects.create(
+                    assoc_id=md.id,
+                    name=img.name,
+                    src=img.src,
+                    ext=img.ext,
+                    mime=img.mime,
+                    width=img.width,
+                    height=img.height
+                )
+            except models.Image.DoesNotExist:
+                pass
+
             md.save()
