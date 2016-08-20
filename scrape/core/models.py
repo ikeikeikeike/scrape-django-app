@@ -60,7 +60,7 @@ class Picture(BaseModel):
 
 class VideoMetadata(BaseModel):
     video = models.ForeignKey('Video', related_name='metadatas')
-    site = models.ForeignKey('Site', related_name='metadatas')
+    site = models.ForeignKey('Site', related_name='metadatas', null=True)
 
     url = models.TextField(blank=True, null=True)
     title = models.TextField(blank=True, null=True)

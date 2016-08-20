@@ -37,8 +37,8 @@ class Command(BaseCommand):
 
             for vid in obj.videos.all():
                 try:
-                    site = core_models.Site.objects.find(domain=vid.site.domain).first()
-                except core_models.Site.DoesNotExist:
+                    site = core_models.Site.objects.filter(domain=vid.site.domain).first()
+                except models.Site.DoesNotExist:
                     site = None
 
                 core_models.VideoMetadata.objects.create(
@@ -46,18 +46,18 @@ class Command(BaseCommand):
                     site=site,
                     url=vid.url,
                     embed_code=vid.code,
-                    duration=vid.duration,
+                    duration=vid.duration or None,
                     #  title=,
                     #  content=,
                 )
 
-                for url in vid.video_urls:
+                for url in vid.video_urls.all():
                     core_models.VideoMetadata.objects.create(
                         video=an.video,
                         url=url.name,
                     )
 
-                for code in vid.video_codes:
+                for code in vid.video_codes.all():
                     core_models.VideoMetadata.objects.create(
                         video=an.video,
                         embed_code=code.name,
@@ -80,7 +80,7 @@ class Command(BaseCommand):
                                 chars.append(char)
 
                         for chh in chars:
-                            toon.chars.add(chars)
+                            toon.chars.add(chh)
 
                         an.toons.add(toon)
                 except models.Anime.DoesNotExist:
@@ -115,4 +115,6 @@ class Command(BaseCommand):
 
             an.blog = bl
             an.metadata = mt
+            an.inserted_at = obj.created
+            an.updated_at = obj.updated
             an.save()
