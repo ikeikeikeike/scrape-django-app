@@ -12,3 +12,4 @@ dateparser==0.4.0
 regex==2016.6.24
 arrow==0.8.0
 scrapy-djangoitem==1.1.1
+plan==0.5
