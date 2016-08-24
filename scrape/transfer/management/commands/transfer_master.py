@@ -55,7 +55,7 @@ def char(characters):
             md.weight = obj.weight
 
             md.bust = obj.bust
-            md.waste = obj.waste
+            md.waist = obj.waste
             md.hip = obj.hip
             md.bracup = obj.bracup
 
@@ -183,7 +183,7 @@ def diva():
             md.weight = obj.weight
 
             md.bust = obj.bust
-            md.waste = obj.waste
+            md.waist = obj.waste
             md.hip = obj.hip
             md.bracup = obj.bracup
 

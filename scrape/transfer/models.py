@@ -71,21 +71,21 @@ class Blog(BaseModel):
     is_ban = models.CharField(max_length=255)
 
     @property
-    def ex_adsensetype(self):
-        if not self.adsensetype:
-            return ''
-        elif self.adsensetype == 'movie':
-            return 'movie'
-        elif self.adsensetype == 'image':
-            return 'image'
-
-    @property
     def ex_mediatype(self):
         if not self.mediatype:
             return ''
-        elif self.mediatype == '2d':
+        elif self.mediatype == 'movie':
+            return 'movie'
+        elif self.mediatype == 'image':
+            return 'image'
+
+    @property
+    def ex_adsensetype(self):
+        if not self.adsensetype:
+            return ''
+        elif self.adsensetype == '2d':
             return 'second_dimension'
-        elif self.mediatype == '3d':
+        elif self.adsensetype == '3d':
             return 'third_dimention'
 
     class Meta:

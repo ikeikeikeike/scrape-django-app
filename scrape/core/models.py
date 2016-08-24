@@ -178,6 +178,7 @@ class Char(BaseModel):
     blood = models.CharField(max_length=255, blank=True, null=True)
     birthday = models.DateField(null=True)
 
+    product = models.CharField(max_length=255)
     outline = models.TextField(blank=True, null=True)
 
     tags = models.ManyToManyField('Tag', through='CharTag')
