@@ -14,3 +14,4 @@ arrow==0.8.0
 scrapy-djangoitem==1.1.1
 plan==0.5
 tldextract==2.0.1
+python-Levenshtein==0.12.0
