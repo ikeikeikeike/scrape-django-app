@@ -34,7 +34,7 @@ def img(uri, headers=None, auth=None):
 
     if not content:
         r = request(uri, headers, auth)
-        if r and r.ok:
+        if r and r.ok and r.content:
             content = r.content
             img_cache.set(uri, content)
             img_store.set(uri, image.Image(uri).info())  # save img info
