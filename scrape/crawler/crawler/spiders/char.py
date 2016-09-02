@@ -10,8 +10,6 @@ import tldextract
 
 from core.extractors import toonchar
 
-from crawler import items
-
 
 ENDPOINT = settings.ENDPOINTS['toonchar']
 
@@ -34,10 +32,5 @@ class Char(CrawlSpider):
     )
 
     def parse_item(self, response):
-        import ipdb; ipdb.set_trace()
-        self.logger.info('Hi, this is an item page! %s', response.url)
         char = toonchar.Char(response.url.split('/')[-1])
-
-        item = items.CharItem()
-        item.update(char.info())
-        return item
+        return char.info()

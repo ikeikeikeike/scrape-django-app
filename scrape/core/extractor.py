@@ -82,6 +82,15 @@ def safe_bracup(word):
     return word
 
 
+def safe_number(num):
+    if not num:
+        return 0
+    elif isinstance(num, str):
+        return '0' + num
+    else:
+        return num
+
+
 def safe_datetime(word):
     if not word:
         return word
