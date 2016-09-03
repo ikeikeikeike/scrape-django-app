@@ -22,10 +22,10 @@ cron = Plan(
 #  cron.script('script.py', path='/web/yourproject/scripts', every='1.month')
 #  cron.module('calendar', every='feburary', at='day.3')
 
-cron.command('%s ~/venv/bin/scrapy crawl toonchar' % (pjoin(dir_path, '../scrape/crawler')), every='2.day', at='minute.48')
+cron.command('cd %s && $HOME/venv/bin/scrapy crawl toonchar' % (pjoin(dir_path, '../scrape/crawler')), every='2.day', at='minute.48')
 cron.script('manage.py profile', every='12.hour', at='minute.24')
 cron.script('manage.py actress', every='3.day', at='minute.12')
 cron.script('manage.py feed', every='2.hour', at='minute.36')
 
 if __name__ == "__main__":
-    cron.run()
+    cron.run('update')
