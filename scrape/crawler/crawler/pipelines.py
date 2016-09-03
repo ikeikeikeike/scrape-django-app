@@ -12,15 +12,15 @@ from core.extractor import (
     safe_content
 )
 
-from crawler import spiders
+from crawler import items
 
 
 class DjangoPipeline(object):
     def process_item(self, item, spider):
 
-        if isinstance(spider, spiders.char.Char):
+        if isinstance(item, items.Char):
             upsert_char(item)
-        elif isinstance(spider, spiders.toon.Toon):
+        elif isinstance(item, items.Toon):
             upsert_toon(item)
 
         return item

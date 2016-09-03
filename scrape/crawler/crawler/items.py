@@ -2,14 +2,14 @@
 #
 # See documentation in:
 # http://doc.scrapy.org/en/latest/topics/items.html
-from scrapy_djangoitem import DjangoItem
-
-from core import models
-
-
-class CharItem(DjangoItem):
-    django_model = models.Char
+#  import scrapy
+#  from scrapy_djangoitem import DjangoItem
+#  from core import models
 
 
-class ToonItem(DjangoItem):
-    django_model = models.Toon
+class Char(dict):
+    pass
+
+
+class Toon(dict):
+    pass
