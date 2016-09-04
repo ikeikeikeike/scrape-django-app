@@ -24,7 +24,7 @@ class Wikipedia(object):
 
     def request(self, query):
         if self._doc is None:
-            text = client.html(ENDPOINT + query)
+            text = client.text(ENDPOINT + query)
             js = json.loads(text)
 
             self._doc = ""

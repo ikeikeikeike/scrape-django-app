@@ -1,5 +1,3 @@
-import json
-
 from django.conf import settings
 
 from core import client
@@ -12,8 +10,7 @@ class Actress(object):
 
     def get(self, letter):
         js = client.json(self._ujoin(letter))
-        people = json.loads(js)
-        return people['Actresses']
+        return js['Actresses']
 
     def all(self):
         people = {}

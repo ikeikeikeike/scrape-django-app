@@ -18,7 +18,7 @@ class Command(BaseCommand):
         for _, acts in actresses.all().items():
             for p in acts:
                 name, alias = separate_alias(p['name'])
-                alias = ','.join(alias)
+                alias = ','.join(alias) or None
 
                 d, created = objs.get_or_create(name=name, alias=alias)
                 if created:
