@@ -24,7 +24,7 @@ BOT_NAME = 'crawler'
 SPIDER_MODULES = ['crawler.spiders']
 NEWSPIDER_MODULE = 'crawler.spiders'
 
-DEPTH_LIMIT = 25000
+DEPTH_LIMIT = 5000
 
 # Crawl responsibly by identifying yourself (and your website) on the user-agent
 USER_AGENT = random.choice(list(settings.USER_AGENT.values()))
