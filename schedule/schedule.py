@@ -27,5 +27,10 @@ cron.script('manage.py profile', every='12.hour', at='minute.24')
 cron.script('manage.py actress', every='3.day', at='minute.12')
 cron.script('manage.py feed', every='2.hour', at='minute.36')
 
+cron.script('manage.py bing_image_char', every='7.day', at='minute.7')
+cron.script('manage.py bing_image_toon', every='5.day', at='minute.14')
+cron.script('manage.py bing_image_diva', every='4.day', at='minute.21')
+cron.script('manage.py bing_image_tag', every='10.day', at='minute.28')
+
 if __name__ == "__main__":
     cron.run('update')

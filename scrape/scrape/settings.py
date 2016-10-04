@@ -17,6 +17,7 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles',
 
     'transfer',
+    'tag',
     'core',
     'blog',
     'diva',
