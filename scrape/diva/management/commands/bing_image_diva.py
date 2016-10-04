@@ -16,22 +16,28 @@ class Command(BaseCommand):
         untouch = models.Diva.objects.order_by('updated_at')[:100]
         blanks = models.Diva.objects.filter(bust=0).order_by('?')[:100]
 
-        for diva in set(randoms + untouch + blanks):
-            query = bing['diva_query'].replace('[[[query]]]', diva.name)
+        upsert(randoms)
+        upsert(untouch)
+        upsert(blanks)
 
-            js = client.json(query, auth=bing['auth'])
-            if len(js['d']['results']) < 1:
-                continue
 
-            infos = sorted(js['d']['results'], key=lambda x: -int(x['Height']))
-            info = infos[0]
+def upsert(qs):
+    for obj in qs:
+        query = bing['diva_query'].replace('[[[query]]]', obj.name)
 
-            dt, _ = models.DivaThumb.get_or_create(assoc=diva)
+        js = client.json(query, auth=bing['auth'])
+        if len(js['d']['results']) < 1:
+            continue
 
-            dt.src = info['MediaUrl']
-            dt.name = info['Title']
-            dt.width = info['Width']
-            dt.height = info['Height']
-            dt.mime = info['ContentType']
-            _, dt.ext = os.path.splitext(dt.src)
-            dt.save()
+        infos = sorted(js['d']['results'], key=lambda x: -int(x['Height']))
+        info = infos[0]
+
+        dt, _ = models.DivaThumb.objects.get_or_create(assoc=obj)
+
+        dt.src = info['MediaUrl']
+        dt.name = info['Title']
+        dt.width = info['Width']
+        dt.height = info['Height']
+        dt.mime = info['ContentType']
+        _, dt.ext = os.path.splitext(dt.src)
+        dt.save()

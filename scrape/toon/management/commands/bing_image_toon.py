@@ -14,24 +14,30 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         randoms = models.Toon.objects.order_by('?')[:100]
         untouch = models.Toon.objects.order_by('updated_at')[:100]
-        blanks = models.Toon.objects.filter(bust=0).order_by('?')[:100]
+        blanks = models.Toon.objects.filter(works='').order_by('?')[:100]
 
-        for obj in set(randoms + untouch + blanks):
-            query = bing['toon_query'].replace('[[[query]]]', obj.name)
+        upsert(randoms)
+        upsert(untouch)
+        upsert(blanks)
 
-            js = client.json(query, auth=bing['auth'])
-            if len(js['d']['results']) < 1:
-                continue
 
-            infos = sorted(js['d']['results'], key=lambda x: -int(x['Height']))
-            info = infos[0]
+def upsert(qs):
+    for obj in qs:
+        query = bing['toon_query'].replace('[[[query]]]', obj.name)
 
-            dt, _ = models.ToonThumb.get_or_create(assoc=obj)
+        js = client.json(query, auth=bing['auth'])
+        if len(js['d']['results']) < 1:
+            continue
 
-            dt.src = info['MediaUrl']
-            dt.name = info['Title']
-            dt.width = info['Width']
-            dt.height = info['Height']
-            dt.mime = info['ContentType']
-            _, dt.ext = os.path.splitext(dt.src)
-            dt.save()
+        infos = sorted(js['d']['results'], key=lambda x: -int(x['Height']))
+        info = infos[0]
+
+        dt, _ = models.ToonThumb.objects.get_or_create(assoc=obj)
+
+        dt.src = info['MediaUrl']
+        dt.name = info['Title']
+        dt.width = info['Width']
+        dt.height = info['Height']
+        dt.mime = info['ContentType']
+        _, dt.ext = os.path.splitext(dt.src)
+        dt.save()

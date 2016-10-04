@@ -14,24 +14,28 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         randoms = models.Tag.objects.order_by('?')[:100]
         untouch = models.Tag.objects.order_by('updated_at')[:100]
-        blanks = models.Tag.objects.filter(bust=0).order_by('?')[:100]
 
-        for obj in set(randoms + untouch + blanks):
-            query = bing['tag_query'].replace('[[[query]]]', obj.name)
+        upsert(randoms)
+        upsert(untouch)
 
-            js = client.json(query, auth=bing['auth'])
-            if len(js['d']['results']) < 1:
-                continue
 
-            infos = sorted(js['d']['results'], key=lambda x: -int(x['Height']))
-            info = infos[0]
+def upsert(qs):
+    for obj in qs:
+        query = bing['tag_query'].replace('[[[query]]]', obj.name)
 
-            dt, _ = models.TagThumb.get_or_create(assoc=obj)
+        js = client.json(query, auth=bing['auth'])
+        if len(js['d']['results']) < 1:
+            continue
 
-            dt.src = info['MediaUrl']
-            dt.name = info['Title']
-            dt.width = info['Width']
-            dt.height = info['Height']
-            dt.mime = info['ContentType']
-            _, dt.ext = os.path.splitext(dt.src)
-            dt.save()
+        infos = sorted(js['d']['results'], key=lambda x: -int(x['Height']))
+        info = infos[0]
+
+        dt, _ = models.TagThumb.objects.get_or_create(assoc=obj)
+
+        dt.src = info['MediaUrl']
+        dt.name = info['Title']
+        dt.width = info['Width']
+        dt.height = info['Height']
+        dt.mime = info['ContentType']
+        _, dt.ext = os.path.splitext(dt.src)
+        dt.save()
