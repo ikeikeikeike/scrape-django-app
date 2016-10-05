@@ -99,6 +99,11 @@ CACHES = {
         'TIMEOUT': 60 * 60 * 24 * 5,  # 5 days
         'KEY_FUNCTION': lambda key, key_prefix, version: key,
     },
+    'lock_in_task': {
+        'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
+        'LOCATION': 'lock-in-task-cache',
+        'TIMEOUT': None,
+    },
 }
 
 LANGUAGE_CODE = 'en-us'

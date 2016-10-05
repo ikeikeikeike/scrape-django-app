@@ -24,7 +24,7 @@ BOT_NAME = 'crawler'
 SPIDER_MODULES = ['crawler.spiders']
 NEWSPIDER_MODULE = 'crawler.spiders'
 
-DEPTH_LIMIT = 300
+DEPTH_LIMIT = 30000
 
 # Crawl responsibly by identifying yourself (and your website) on the user-agent
 USER_AGENT = random.choice(list(settings.USER_AGENT.values()))
@@ -39,7 +39,7 @@ CONCURRENT_REQUESTS = 1
 # Configure a delay for requests for the same website (default: 0)
 # See http://scrapy.readthedocs.org/en/latest/topics/settings.html#download-delay
 # See also autothrottle settings and docs
-DOWNLOAD_DELAY = 136.6
+DOWNLOAD_DELAY = 36.6
 # The download delay setting will honor only one of:
 #CONCURRENT_REQUESTS_PER_DOMAIN = 16
 #CONCURRENT_REQUESTS_PER_IP = 16
