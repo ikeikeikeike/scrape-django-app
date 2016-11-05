@@ -60,15 +60,13 @@ def import_extractor(name):
         mod = importlib.import_module(mname)
     except ImportError:
         return None
-
-    return getattr(mod, kname)
+    try:
+        return getattr(mod, kname)
+    except AttributeError:
+        return None
 
 
 def get_extractor(name, url):
     klass = import_extractor(name)
 
-    try:
-        return klass and klass(url)
-    except AttributeError:
-        return None
-
+    return klass and klass(url)

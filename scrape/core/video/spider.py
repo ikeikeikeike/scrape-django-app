@@ -119,16 +119,14 @@ def import_spider(name):
         mod = importlib.import_module(mname)
     except ImportError:
         return None
-
-    return getattr(mod, kname)
+    try:
+        return getattr(mod, kname)
+    except AttributeError:
+        return None
 
 
 def get_spider(url):
     name = tldextract.extract(url).domain
     klass = import_spider(name)
 
-    try:
-        return klass and klass(url)
-    except AttributeError:
-        return None
-
+    return klass and klass(url)
