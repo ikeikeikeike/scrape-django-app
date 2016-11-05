@@ -28,10 +28,12 @@ def upsert(qs):
         js = client.json(query, auth=bing['auth'])
         if js and js['d'] and len(js['d']['results']) < 1:
             continue
+        try:
+            infos = sorted(js['d']['results'], key=lambda x: -int(x['Height']))
+        except TypeError:
+             continue
 
-        infos = sorted(js['d']['results'], key=lambda x: -int(x['Height']))
         info = infos[0]
-
         dt, _ = models.DivaThumb.objects.get_or_create(assoc=obj)
 
         dt.src = info['MediaUrl']
