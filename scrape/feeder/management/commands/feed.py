@@ -18,7 +18,7 @@ eventlet.monkey_patch(socket=True)
 
 class Command(BaseCommand):
     def handle(self, *args, **options):
-        for b in models.Blog.objects.all():
+        for b in models.Blog.objects.all().order_by('?'):
             if not b.rss:
                 continue
 
