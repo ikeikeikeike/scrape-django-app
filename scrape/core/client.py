@@ -1,4 +1,5 @@
 import random
+from urllib.parse import urlparse
 
 from django.conf import settings
 from django.core.cache import caches
@@ -30,6 +31,7 @@ def rq(headers=None):
 
 
 def img(uri, headers=None, auth=None):
+    uri = _prepare(uri)
     content = img_cache.get(uri)
 
     if not content:
@@ -43,6 +45,7 @@ def img(uri, headers=None, auth=None):
 
 
 def json(uri, headers=None, auth=None):
+    uri = _prepare(uri)
     js = any_cache.get(uri, version=3)
 
     if not js:
@@ -55,6 +58,7 @@ def json(uri, headers=None, auth=None):
 
 
 def html(uri, headers=None, auth=None):
+    uri = _prepare(uri)
     content = any_cache.get(uri, version=4)
 
     if not content:
@@ -67,6 +71,7 @@ def html(uri, headers=None, auth=None):
 
 
 def text(uri, headers=None, auth=None):
+    uri = _prepare(uri)
     content = any_cache.get(uri, version=5)
 
     if not content:
@@ -88,3 +93,17 @@ def request(uri, headers=None, auth=None):
     ):
         return None
     return r
+
+
+def _prepare(url):
+    u = urlparse(url)
+
+    if u.scheme:
+        return url
+
+    u = u._replace(scheme='http')
+    if request(u.geturl()):
+        return u.geturl()
+
+    u = u._replace(scheme='https')
+    return u.geturl()
