@@ -26,7 +26,7 @@ def upsert(qs):
         query = bing['diva_query'].replace('[[[query]]]', obj.name)
 
         js = client.json(query, auth=bing['auth'])
-        if js['d'] and len(js['d']['results']) < 1:
+        if js and js['d'] and len(js['d']['results']) < 1:
             continue
 
         infos = sorted(js['d']['results'], key=lambda x: -int(x['Height']))
