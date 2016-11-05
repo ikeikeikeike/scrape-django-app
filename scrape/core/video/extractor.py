@@ -67,4 +67,8 @@ def import_extractor(name):
 def get_extractor(name, url):
     klass = import_extractor(name)
 
-    return klass and klass(url)
+    try:
+        return klass and klass(url)
+    except AttributeError:
+        return None
+

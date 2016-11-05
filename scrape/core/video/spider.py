@@ -127,4 +127,8 @@ def get_spider(url):
     name = tldextract.extract(url).domain
     klass = import_spider(name)
 
-    return klass and klass(url)
+    try:
+        return klass and klass(url)
+    except AttributeError:
+        return None
+
