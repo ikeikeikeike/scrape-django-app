@@ -6,6 +6,7 @@ from django.core.cache import caches
 
 from pyquery import PyQuery as pq
 
+from core import utils
 from core import client
 from core import bracalc
 from core import extractor
@@ -18,11 +19,8 @@ bust_ptn = re.compile(r'b', re.IGNORECASE)
 waist_ptn = re.compile(r'w', re.IGNORECASE)
 hip_ptn = re.compile(r'h', re.IGNORECASE)
 
+fint = utils.fint
 any_cache = caches['tmp_anything']
-
-
-def fint(i):
-    return int(float(i))
 
 
 class Base(object):

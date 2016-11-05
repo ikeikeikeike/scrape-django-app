@@ -5,16 +5,14 @@ from django.conf import settings
 
 from pyquery import PyQuery as pq
 
+from core import utils
 from core import client
 from core import bracalc
 from core import extractor
 
 
+fint = utils.fint
 ENDPOINT = settings.ENDPOINTS['wikiorg']
-
-
-def fint(i):
-    return int(float(i))
 
 
 class Wikipedia(object):
