@@ -16,3 +16,4 @@ scrapy-djangoitem==1.1.1
 plan==0.5
 tldextract==2.0.1
 python-Levenshtein==0.12.0
+django-mailgun==0.9.1

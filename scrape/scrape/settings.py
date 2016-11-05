@@ -1,11 +1,9 @@
 import os
+import socket
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-
 SECRET_KEY = '2(s%qab2ha_y=h6cw%_)30nkg!)he@xl1k@!s3ar%vv$bhr*4@'
-
 DEBUG = True
-
 ALLOWED_HOSTS = ['*']
 
 INSTALLED_APPS = (
@@ -106,6 +104,90 @@ CACHES = {
     },
 }
 
+SERVER_EMAIL = "noreply@{}".format(socket.gethostname())
+DEFAULT_FROM_EMAIL = SERVER_EMAIL
+
+EMAIL_BACKEND = 'django_mailgun.MailgunBackend'
+
+LOGGING_PREFIX = 'scrape'
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'filters': {
+        'require_debug_false': {
+            '()': 'django.utils.log.RequireDebugFalse',
+        },
+    },
+    'formatters': {
+        'verbose': {
+            'format': ('[in %(pathname)s:%(lineno)d] '
+                       '%(asctime)s %(process)d %(thread)d '
+                       '%(levelname)s %(module)s: %(message)s'),
+            'datefmt': '%Y-%m-%d %H:%M:%S',
+        },
+        'syslog_verbose': {
+            'format': (LOGGING_PREFIX + ': [in %(pathname)s:%(lineno)d] '
+                       '%(asctime)s %(process)d %(thread)d '
+                       '%(levelname)s %(module)s: %(message)s'),
+            'datefmt': '%Y-%m-%d %H:%M:%S',
+        },
+        'sql': {
+            'format': '%(message)s',
+            'datefmt': '%Y-%m-%d %H:%M:%S',
+        },
+    },
+    'handlers': {
+        'console': {
+            'level': 'DEBUG',
+            'class': 'logging.StreamHandler',
+            'formatter': 'verbose'
+        },
+        'sql': {
+            'level': 'DEBUG',
+            'class': 'logging.StreamHandler',
+            'formatter': 'sql'
+        },
+        'null': {
+            'level': 'DEBUG',
+            'class': 'logging.NullHandler',
+        },
+        'mail_admins': {
+            'level': 'ERROR',
+            'class': 'django.utils.log.AdminEmailHandler',
+            'formatter': 'verbose',
+            'include_html': True,
+            'email_backend': EMAIL_BACKEND,
+        }
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['console'],
+            'level': 'DEBUG',
+            'propagate': True
+        },
+        'django.db.backends': {
+            'handlers': ['sql'],
+            'level': 'DEBUG',
+            'propagate': False,
+        },
+        # 'django.request': {
+        #     'handlers': ['mail_admins'],
+        #     'level': 'ERROR',
+        #     'propagate': True,
+        # },
+        LOGGING_PREFIX: {
+            'handlers': ['console', 'mail_admins'],
+            'level': 'DEBUG',
+            'propagate': True
+        },
+        'celery.task': {
+            'handlers': ['console'],
+            'level': 'DEBUG',
+            'propagate': True
+        },
+    }
+}
+
 LANGUAGE_CODE = 'en-us'
 TIME_ZONE = 'UTC'
 USE_I18N = True
@@ -129,3 +211,5 @@ ALLOW_EXTENSIONS = ['.jpg', '.jpeg', '.gif', '.png', '.bmp']
 VIDEO_ELEMENTS = []
 
 ENDPOINTS = {}
+
+ADMINS = []
