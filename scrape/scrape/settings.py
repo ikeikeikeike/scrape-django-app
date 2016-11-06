@@ -22,6 +22,8 @@ INSTALLED_APPS = (
     'char',
     'toon',
     'feeder',
+
+    'extoon',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -55,11 +57,33 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'scrape.wsgi.application'
 
+DATABASE_ROUTERS = ['scrape.dbrouter.DBRouter']
+
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
-    }
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': 'exantenna_dev',
+        'USER': 'postgres',
+        'PASSWORD': 'postgres',
+        'HOST': '127.0.0.1',
+        'PORT': 5432,
+    },
+    'transfer': {
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': 'antenna_org',
+        'USER': 'postgres',
+        'PASSWORD': 'postgres',
+        'HOST': '127.0.0.1',
+        'PORT': 5432,
+    },
+    'extoon': {
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': 'extoon_dev',
+        'USER': 'postgres',
+        'PASSWORD': 'postgres',
+        'HOST': '127.0.0.1',
+        'PORT': 5432,
+    },
 }
 
 REDISES = {
@@ -198,13 +222,15 @@ STATIC_URL = '/static/'
 USER_AGENT = {
     'chrome': (
         'Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 '
-        '(KHTML, like Gecko) Chrome/51.0.2704.103 Safari/537.36'
+        '(KHTML, like Gecko) Chrome/54.0.2840.71 Safari/537.36'
     ),
     'firefox': (
         'Mozilla/5.0 (Windows NT 10.0; Win64; x64; '
-        'rv:47.0) Gecko/20100101 Firefox/47.0'
+        'rv:49.0) Gecko/20100101 Firefox/49.0'
     ),
 }
+
+USER_AGENTS = []
 
 ALLOW_EXTENSIONS = ['.jpg', '.jpeg', '.gif', '.png', '.bmp']
 

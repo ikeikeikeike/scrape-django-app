@@ -27,7 +27,7 @@ NEWSPIDER_MODULE = 'crawler.spiders'
 DEPTH_LIMIT = 30000
 
 # Crawl responsibly by identifying yourself (and your website) on the user-agent
-USER_AGENT = random.choice(list(settings.USER_AGENT.values()))
+USER_AGENT = random.choice(settings.USER_AGENTS)
 
 # Obey robots.txt rules
 ROBOTSTXT_OBEY = False
@@ -53,10 +53,13 @@ COOKIES_ENABLED = True
 #TELNETCONSOLE_ENABLED = False
 
 # Override the default request headers:
-#DEFAULT_REQUEST_HEADERS = {
-#   'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
-#   'Accept-Language': 'en',
-#}
+DEFAULT_REQUEST_HEADERS = {
+    'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+    'Accept-Language': 'ja,en-US;q=0.7,en;q=0.3',
+    'Accept-Encoding': 'gzip, deflate',
+    'Connection': 'keep-alive',
+    'Cache-Control': 'max-age=0',
+}
 
 # Enable or disable spider middlewares
 # See http://scrapy.readthedocs.org/en/latest/topics/spider-middleware.html

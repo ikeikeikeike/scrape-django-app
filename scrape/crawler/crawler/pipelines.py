@@ -3,6 +3,7 @@
 # Don't forget to add your pipeline to the ITEM_PIPELINES setting
 # See: http://doc.scrapy.org/en/latest/topics/item-pipeline.html
 
+from extoon import models as exmodels
 from core import models
 from core.extractor import (
     safe_kana,
@@ -22,6 +23,8 @@ class DjangoPipeline(object):
             upsert_char(item)
         elif isinstance(item, items.Toon):
             upsert_toon(item)
+        elif isinstance(item, items.Entry):
+            insert_entry(item)
 
         return item
 
@@ -70,3 +73,17 @@ def upsert_toon(item):
         t.tags.add(tag)
 
     t.save()
+
+
+def insert_entry(item):
+    e, c = exmodels.Entry.objects.get_or_create(title=item['title'])
+    if c is True:
+        for url in filter(lambda w: w, item.get('urls', [])):
+            eu, _ = exmodels.EntryUrl.objects.get_or_create(url=url)
+            e.urls.add(eu)
+
+        for code in filter(lambda w: w, item.get('embed_codes', [])):
+            ee, _ = exmodels.EntryEmbed.objects.get_or_create(code=code)
+            e.codes.add(ee)
+
+        e.save()

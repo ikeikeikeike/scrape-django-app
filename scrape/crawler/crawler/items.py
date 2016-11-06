@@ -13,3 +13,7 @@ class Char(dict):
 
 class Toon(dict):
     pass
+
+
+class Entry(dict):
+    pass
