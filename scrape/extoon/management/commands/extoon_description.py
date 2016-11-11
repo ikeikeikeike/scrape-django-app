@@ -9,9 +9,10 @@ from extoon import models
 
 class Command(BaseCommand):
     def handle(self, *args, **options):
-        where = Q(info__isnull=False, maker_id__isnull=False, content__isnull=True)
-        qs = models.Entry.objects.filter(where).order_by('updated_at')
+        where = Q(info__isnull=False, maker_id__isnull=False)
+        where = where & Q(Q(content='') | Q(content__isnull=True))
 
+        qs = models.Entry.objects.filter(where).order_by('updated_at')
         for entry in qs:
             entry.content = extract(entry.info.info or [])
             entry.updated_at = timezone.now()
