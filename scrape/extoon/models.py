@@ -6,7 +6,10 @@ from core.models import BaseModel
 
 
 class Entry(BaseModel):
+    maker_id = models.IntegerField()  # TODO: To become foreignkey
+
     title = models.TextField()
+    content = models.TextField()
 
     class Meta:
         db_table = 'entries'
@@ -26,3 +29,11 @@ class EntryEmbed(BaseModel):
 
     class Meta:
         db_table = 'entries_embeds'
+
+
+class EntryInfo(BaseModel):
+    assoc = models.OneToOneField(Entry, related_name='info')
+    info = models.TextField()
+
+    class Meta:
+        db_table = 'entries_infos'
