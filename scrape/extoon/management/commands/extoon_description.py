@@ -12,7 +12,7 @@ class Command(BaseCommand):
         where = Q(info__isnull=False, maker_id__isnull=False)
         where = where & Q(Q(content='') | Q(content__isnull=True))
 
-        qs = models.Entry.objects.filter(where).order_by('updated_at')
+        qs = models.Entry.objects.filter(where).order_by('updated_at')[:100]
         for entry in qs:
             entry.content = extract(entry.info.info or [])
             entry.updated_at = timezone.now()
