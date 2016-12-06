@@ -1,3 +1,5 @@
+import time
+
 from django.utils import timezone
 from django.core.management.base import BaseCommand
 from django.db.models import Q
@@ -17,6 +19,8 @@ class Command(BaseCommand):
             entry.content = extract(entry.info.info or [])
             entry.updated_at = timezone.now()
             entry.save()
+
+            time.sleep(77)
 
 
 def extract(infos):
