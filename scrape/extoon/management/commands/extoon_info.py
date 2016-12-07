@@ -19,7 +19,10 @@ class Command(BaseCommand):
         qs = models.Entry.objects.filter(where).order_by('updated_at')[:100]
 
         for e in qs:
-            e.info, _ = gorc(assoc_id=e.id, info=infos.info(e.title) or None)
+            info, _ = gorc(assoc_id=e.id)
+            info.info = infos.info(e.title) or None
+
+            e.info = info
             e.updated_at = timezone.now()
             e.save()
 
