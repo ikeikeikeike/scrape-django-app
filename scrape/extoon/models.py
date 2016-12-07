@@ -1,5 +1,6 @@
 from __future__ import unicode_literals
 
+from django.contrib.postgres import fields
 from django.db import models
 
 from core.models import BaseModel
@@ -33,7 +34,7 @@ class EntryEmbed(BaseModel):
 
 class EntryInfo(BaseModel):
     assoc = models.OneToOneField(Entry, related_name='info')
-    info = models.TextField()
+    info = fields.JSONField(default=None)
 
     class Meta:
         db_table = 'entries_infos'

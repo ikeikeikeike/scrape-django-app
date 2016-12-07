@@ -1,8 +1,11 @@
+from django.conf import settings
 from django.core.cache import caches
 
 from pyquery import PyQuery as pq
 
 from core import client
+
+dms = settings.ENDPOINTS['dms']
 
 any_cache = caches['tmp_anything']
 
@@ -58,3 +61,13 @@ class Detail(Base):
             return self.doc('.summary__txt').text()
 
         return None
+
+
+class Info(object):
+
+    def info(self, title):
+        r = client.json(self._ujoin(title))
+        return r['result']['items']
+
+    def _ujoin(self, path):
+        return dms['findinfo'].format(query=path)

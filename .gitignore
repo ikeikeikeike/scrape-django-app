@@ -93,6 +93,7 @@ ENV/
 
 # for django
 settings_local.py
+settings_prod.py
 *.sqlite3
 tags
 /scrape/core/video/spiders/

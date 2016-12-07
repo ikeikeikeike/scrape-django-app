@@ -4,6 +4,7 @@ import socket
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = '2(s%qab2ha_y=h6cw%_)30nkg!)he@xl1k@!s3ar%vv$bhr*4@'
 DEBUG = True
+ENVIRONMENT = 'none'
 ALLOWED_HOSTS = ['*']
 
 INSTALLED_APPS = (

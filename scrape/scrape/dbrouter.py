@@ -14,5 +14,5 @@ class DBRouter(object):
             if obj2._meta.app_label != 'extoon':
                 return False
 
-    def allow_migrate(self, db, model):
+    def allow_migrate(self, db, app_label, **hints):
         return False
