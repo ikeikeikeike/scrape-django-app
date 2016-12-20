@@ -23,7 +23,7 @@ class Command(BaseCommand):
 
             time.sleep(1)
             if settings.ENVIRONMENT == 'prod':
-                time.sleep(77)
+                time.sleep(11)
 
 
 def extract(infos):
