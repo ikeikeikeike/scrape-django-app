@@ -28,6 +28,8 @@ class Command(BaseCommand):
 
 def extract(infos):
     for info in infos:
+        if not info.get('URL'):
+            continue
         detail = dms.Detail(info['URL'])
 
         if detail.ok and detail.description():

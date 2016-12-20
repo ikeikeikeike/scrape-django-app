@@ -67,7 +67,7 @@ class Info(object):
 
     def info(self, title):
         r = client.json(self._ujoin(title))
-        return r['result']['items']
+        return r and r.get('result', {}).get('items')
 
     def _ujoin(self, path):
         return dms['findinfo'].format(query=path)

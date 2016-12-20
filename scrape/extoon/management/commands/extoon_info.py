@@ -12,20 +12,23 @@ from extoon import models
 
 class Command(BaseCommand):
     def handle(self, *args, **options):
-        infos = dms.Info()
+        api = dms.Info()
         gorc = models.EntryInfo.objects.get_or_create
 
-        where = Q(info__info__isnull=True, maker_id__isnull=True)
+        where = Q(info__info__isnull=True)
         qs = models.Entry.objects.filter(where).order_by('updated_at')[:100]
 
         for e in qs:
-            info, _ = gorc(assoc_id=e.id)
-            info.info = infos.info(e.title) or None
+            inf, _ = gorc(assoc_id=e.id)
 
-            e.info = info
+            inf.info = api.info(e.title) or None
+            if inf.info:
+                inf.save()
+
+            e.info = inf
             e.updated_at = timezone.now()
             e.save()
 
             time.sleep(1)
             if settings.ENVIRONMENT == 'prod':
-                time.sleep(77)
+                time.sleep(5)
