@@ -5,7 +5,7 @@ import random
 import django
 
 sys.path.append('..')
-os.environ['DJANGO_SETTINGS_MODULE'] = 'scrape.settings_local'
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "scrape.settings")
 django.setup()
 
 from django.conf import settings
