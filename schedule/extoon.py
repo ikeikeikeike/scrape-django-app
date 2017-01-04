@@ -23,6 +23,7 @@ cron = Plan(
 #  cron.module('calendar', every='feburary', at='day.3')
 
 cron.command('cd %s && $HOME/venv/bin/scrapy crawl eoaient' % (pjoin(dir_path, '../scrape/crawler')), every='1.day', at='minute.48')
+cron.command('cd %s && $HOME/venv/bin/scrapy crawl ck0tp' % (pjoin(dir_path, '../scrape/crawler')), every='1.day', at='minute.12')
 cron.script('manage.py extoon_info', every='5.hour', at='minute.30')
 cron.script('manage.py extoon_description', every='6.hour', at='minute.15')
 

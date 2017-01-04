@@ -50,22 +50,17 @@ class Video(Base):
         )
 
     def title(self):
-        sel = '#page_headline'
+        sel = 'h1'
 
         return self.doc(sel).html()
 
     def urls(self):
-        sel = '.data-link li a'
-
-        urls = []
-        for doc in self.doc(sel).items():
-            urls.append(doc.html())
-        return urls
+        return []
 
     def embed_codes(self):
-        sel, sele = '.accordion .video-container', 'object,iframe'
+        sel = '.player'
 
         codes = []
         for doc in self.doc(sel).items():
-            codes.append(str(doc(sele)))
+            codes.append(doc.html())
         return codes

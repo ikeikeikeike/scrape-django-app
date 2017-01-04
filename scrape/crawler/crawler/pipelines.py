@@ -24,7 +24,7 @@ class DjangoPipeline(object):
         elif isinstance(item, items.Toon):
             upsert_toon(item)
         elif isinstance(item, items.Entry):
-            insert_entry(item)
+            upsert_entry(item)
 
         return item
 
@@ -75,15 +75,19 @@ def upsert_toon(item):
     t.save()
 
 
-def insert_entry(item):
-    e, c = exmodels.Entry.objects.get_or_create(title=item['title'])
-    if c is True:
-        for url in filter(lambda w: w, item.get('urls', [])):
+def upsert_entry(item):
+    e, _ = exmodels.Entry.objects.get_or_create(title=item['title'])
+
+    urls = [x.url for x in e.urls.all()]
+    for url in filter(lambda w: w, item.get('urls', [])):
+        if url not in urls:
             eu, _ = exmodels.EntryUrl.objects.get_or_create(url=url)
             e.urls.add(eu)
 
-        for code in filter(lambda w: w, item.get('embed_codes', [])):
+    codes = [x.code for x in e.codes.all()]
+    for code in filter(lambda w: w, item.get('embed_codes', [])):
+        if code not in codes:
             ee, _ = exmodels.EntryEmbed.objects.get_or_create(code=code)
             e.codes.add(ee)
 
-        e.save()
+    e.save()
