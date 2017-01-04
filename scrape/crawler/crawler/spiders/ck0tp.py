@@ -23,6 +23,7 @@ EOAIENT = settings.ENDPOINTS['ck0tp']
 
 ENDPOINT = EOAIENT['ENDPOINT']
 DIRECTIVE = EOAIENT['DIRECTIVE']
+DIRECTIVES = EOAIENT['DIRECTIVES']
 
 
 class Ck0tp(CrawlSpider):
@@ -34,11 +35,14 @@ class Ck0tp(CrawlSpider):
     start_urls = [
         pjoin(ENDPOINT, DIRECTIVE),
         ENDPOINT,
+    ] + [
+        pjoin(ENDPOINT, d)
+        for d in DIRECTIVES
     ]
 
     rules = (
         Rule(
-            LinkExtractor(allow=(r'archives/\d+/?$', ), deny=(r'page/\d+', )),
+            LinkExtractor(allow=(r'.+/\d+/?$', ), deny=(r'page/\d+', )),
             callback='parse_video', follow=True
         ),
     )
@@ -49,7 +53,10 @@ class Ck0tp(CrawlSpider):
         if not lockin.add(self.__class__.__name__, 'true', 60 * 60 * 24 * 5):
            raise exceptions.CloseSpider('already launched spider')
 
-    def spider_closed(self, spider):
+    def closed(self, *args, **kwargs):
+        lockin.delete(self.__class__.__name__)
+
+    def spider_closed(self, *args, **kwargs):
         lockin.delete(self.__class__.__name__)
 
     def parse_video(self, response):
