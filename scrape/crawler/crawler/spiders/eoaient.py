@@ -24,7 +24,6 @@ EOAIENT = settings.ENDPOINTS['eoaient']
 ENDPOINT = EOAIENT['ENDPOINT']
 DIRECTIVE = EOAIENT['DIRECTIVE']
 DIRECTIVE2 = EOAIENT['DIRECTIVE2']
-DIRECTIVE3 = EOAIENT['DIRECTIVE3']
 
 
 class Eoaient(CrawlSpider):
@@ -34,9 +33,8 @@ class Eoaient(CrawlSpider):
         tldextract.extract(ENDPOINT).registered_domain
     ]
     start_urls = [
-        pjoin(ENDPOINT, DIRECTIVE3),
-        pjoin(ENDPOINT, DIRECTIVE2),
         pjoin(ENDPOINT, DIRECTIVE),
+        pjoin(ENDPOINT, DIRECTIVE2),
         ENDPOINT,
     ]
 
