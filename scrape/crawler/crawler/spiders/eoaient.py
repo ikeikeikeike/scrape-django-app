@@ -48,8 +48,8 @@ class Eoaient(CrawlSpider):
     def __init__(self, *args, **kwargs):
         super(Eoaient, self).__init__(*args, **kwargs)
         # unduplicate lock
-        if not lockin.add(self.__class__.__name__, 'true', 60 * 60 * 24 * 10):
-           raise exceptions.CloseSpider('already launched spider')
+        if not lockin.add(self.__class__.__name__, 'true', 60 * 60 * 24 * 5):
+            raise exceptions.CloseSpider('already launched spider')
 
     def closed(self, *args, **kwargs):
         lockin.delete(self.__class__.__name__)

@@ -22,6 +22,7 @@ lockin = caches['lock_in_task']
 EOAIENT = settings.ENDPOINTS['ck0tp']
 
 ENDPOINT = EOAIENT['ENDPOINT']
+ENDPATH = EOAIENT['ENDPATH']
 DIRECTIVE = EOAIENT['DIRECTIVE']
 DIRECTIVES = EOAIENT['DIRECTIVES']
 
@@ -42,7 +43,7 @@ class Ck0tp(CrawlSpider):
 
     rules = (
         Rule(
-            LinkExtractor(allow=(r'.+/\d+/?$', ), deny=(r'page/\d+', )),
+            LinkExtractor(allow=(r'{}/\d+/?$'.format(ENDPATH), )),
             callback='parse_video', follow=True
         ),
     )
@@ -50,8 +51,8 @@ class Ck0tp(CrawlSpider):
     def __init__(self, *args, **kwargs):
         super(Ck0tp, self).__init__(*args, **kwargs)
         # unduplicate lock
-        if not lockin.add(self.__class__.__name__, 'true', 60 * 60 * 24 * 10):
-           raise exceptions.CloseSpider('already launched spider')
+        if not lockin.add(self.__class__.__name__, 'true', 60 * 60 * 24 * 5):
+            raise exceptions.CloseSpider('already launched spider')
 
     def closed(self, *args, **kwargs):
         lockin.delete(self.__class__.__name__)
