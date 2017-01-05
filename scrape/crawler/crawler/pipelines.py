@@ -25,6 +25,8 @@ class DjangoPipeline(object):
             upsert_toon(item)
         elif isinstance(item, items.Entry):
             upsert_entry(item)
+        elif isinstance(item, items.Edmmx):
+            upsert_edmmx(item)
 
         return item
 
@@ -91,3 +93,7 @@ def upsert_entry(item):
             e.codes.add(ee)
 
     e.save()
+
+
+def upsert_edmmx(item):
+    pass

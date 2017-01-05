@@ -1,46 +1,11 @@
 from django.core.cache import caches
 
-from pyquery import PyQuery as pq
-
-from core import client
+from . import base
 
 any_cache = caches['tmp_anything']
 
 
-class Base(object):
-
-    PATH = NotImplementedError('wth')
-
-    def __init__(self, url):
-        self.url = url
-        self._html = None
-
-    @property
-    def html(self):
-        if self._html is None:
-            url = self._process_url()
-            self._html = client.text(url)
-        return self._html
-
-    @property
-    def doc(self):
-        return pq(self.html or None)
-
-    @property
-    def ok(self):
-        return bool(self.doc)
-
-    def info(self):
-        raise NotImplementedError('wth')
-
-    def __repr__(self):
-        return str(self.info())
-
-    def _process_url(self):
-        return self.url
-
-
-class Video(Base):
+class Video(base.ExtractBase):
 
     def info(self):
         return dict(

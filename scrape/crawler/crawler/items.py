@@ -17,3 +17,7 @@ class Toon(dict):
 
 class Entry(dict):
     pass
+
+
+class Edmmx(dict):
+    pass

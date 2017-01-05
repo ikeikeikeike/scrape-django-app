@@ -1,4 +1,4 @@
-Scrapy==1.1.2
+Scrapy==1.2.2
 Django==1.10.4
 psycopg2==2.6.1
 feedparser==5.2.1
