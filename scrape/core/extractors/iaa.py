@@ -11,7 +11,7 @@ class Video(base.ExtractBase):
 
     def info(self):
         return dict(
-            user=self.user(),
+            author=self.author(),
             title=self.title(),
             explain=self.explain(),
             comments=self.comments(),
@@ -20,7 +20,7 @@ class Video(base.ExtractBase):
             embed_codes=self.embed_codes(),
         )
 
-    def user(self):
+    def author(self):
         sel = '.node-info .submitted a.username'
 
         return self.doc(sel).html()

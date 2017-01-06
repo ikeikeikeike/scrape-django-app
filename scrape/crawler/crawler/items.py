@@ -19,5 +19,5 @@ class Entry(dict):
     pass
 
 
-class Edmmx(dict):
+class Emmdx(dict):
     pass

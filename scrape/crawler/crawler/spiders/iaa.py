@@ -57,4 +57,4 @@ class IAASpider(CrawlSpider):
 
     def parse_video(self, response):
         vid = iaa.Video(response.url)
-        return items.Edmmx(vid.info())
+        return items.Emmdx(vid.info())
