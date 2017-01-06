@@ -25,6 +25,7 @@ INSTALLED_APPS = (
     'feeder',
 
     'extoon',
+    'emmdx',
 )
 
 MIDDLEWARE_CLASSES = (

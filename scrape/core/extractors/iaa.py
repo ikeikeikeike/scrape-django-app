@@ -1,7 +1,6 @@
 from django.core.cache import caches
 from django.utils.html import strip_tags
 
-
 from . import base
 
 any_cache = caches['tmp_anything']
@@ -11,13 +10,14 @@ class Video(base.ExtractBase):
 
     def info(self):
         return dict(
+            url=self.url,
             author=self.author(),
             title=self.title(),
             explain=self.explain(),
             comments=self.comments(),
             categories=self.categories(),
-            urls=self.urls(),
-            embed_codes=self.embed_codes(),
+            thumb=self.thumb(),
+            embed_code=self.embed_code(),
         )
 
     def author(self):
@@ -51,10 +51,12 @@ class Video(base.ExtractBase):
             categories.append(strip_tags(item.html()))
         return categories
 
-    def urls(self):
-        return []
+    def thumb(self):
+        sel = 'video'
 
-    def embed_codes(self):
+        return self.doc(sel).attr('poster')
+
+    def embed_code(self):
         sel = 'video'
 
         return str(self.doc(sel))

@@ -17,7 +17,10 @@ class Entry(BaseModel):
 
     tags = models.ManyToManyField('Tag', through='EntryTag')
 
+    url = models.URLField()
     title = models.TextField()
+
+    code = models.TextField()
     content = models.TextField(blank=True, null=True)
     comments = models.TextField(blank=True, null=True)
 
@@ -29,14 +32,6 @@ class Entry(BaseModel):
         db_table = 'entries'
 
 
-class EntryEmbed(BaseModel):
-    entry = models.ForeignKey(Entry, related_name='codes')
-    code = models.TextField()
-
-    class Meta:
-        db_table = 'entries_embeds'
-
-
 class Tag(BaseModel):
     name = models.SlugField(unique=True)
 
@@ -45,14 +40,14 @@ class Tag(BaseModel):
 
 
 class EntryTag(models.Model):
-    entry = models.ForeignKey(Entry)
+    entry = models.ForeignKey(Entry, primary_key=True)
     tag = models.ForeignKey(Tag)
 
     class Meta:
         managed = False
-        auto_created = True
+        #  auto_created = True
         db_table = 'entries_tags'
-        unique_together = (('entry', 'tag'), ('tag', 'entry'),)
+        unique_together = (('entry', 'tag'), )
 
 
 class EntryThumb(BaseModel):

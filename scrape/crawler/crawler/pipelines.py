@@ -3,6 +3,7 @@
 # Don't forget to add your pipeline to the ITEM_PIPELINES setting
 # See: http://doc.scrapy.org/en/latest/topics/item-pipeline.html
 
+from emmdx import models as emmdxmodels
 from extoon import models as exmodels
 from core import models
 from core.extractor import (
@@ -96,4 +97,27 @@ def upsert_entry(item):
 
 
 def upsert_emmdx(item):
-    pass
+    if not item['embed_code'] or not item['thumb']:
+        return
+
+    md = emmdxmodels
+
+    e, _ = md.Entry.objects.get_or_create(title=item['title'])
+
+    e.url = item['url']
+    e.title = item['title']
+
+    e.code = item['embed_code']
+    e.content = item['explain']
+    e.comments = '|'.join(item.get('comments', []))
+    e.author, _ = md.Author.objects.get_or_create(name=item['author'])
+
+    md.EntryThumb.objects.get_or_create(assoc=e, src=item['thumb'])
+
+    tags = [x.name for x in e.tags.all()]
+    for name in item['categories'] or []:
+        if name not in tags:
+            tag, _ = md.Tag.objects.get_or_create(name=name)
+            md.EntryTag.objects.get_or_create(entry=e, tag=tag)
+
+    e.save()
