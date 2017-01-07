@@ -57,6 +57,6 @@ class Video(base.ExtractBase):
         return self.doc(sel).attr('poster')
 
     def embed_code(self):
-        sel = 'video'
+        sel = 'video,iframe'
 
         return str(self.doc(sel))

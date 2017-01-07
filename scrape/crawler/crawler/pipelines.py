@@ -110,9 +110,12 @@ def upsert_emmdx(item):
     e.code = item['embed_code']
     e.content = item['explain']
     e.comments = '|'.join(item.get('comments', []))
-    e.author, _ = md.Author.objects.get_or_create(name=item['author'])
 
-    md.EntryThumb.objects.get_or_create(assoc=e, src=item['thumb'])
+    e.author, _ = md.Author.objects.get_or_create(name=item['author'])
+    e.info, _ = md.EntryInfo.objects.get_or_create(assoc_id=e.id, info=item)
+
+    # do to build in elixir
+    #  md.EntryThumb.objects.get_or_create(assoc=e, src=item['thumb'])
 
     tags = [x.name for x in e.tags.all()]
     for name in item['categories'] or []:

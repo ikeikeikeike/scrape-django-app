@@ -1,5 +1,6 @@
 from __future__ import unicode_literals
 
+from django.contrib.postgres import fields
 from django.db import models
 
 from core.models import BaseModel
@@ -63,3 +64,11 @@ class EntryThumb(BaseModel):
 
     class Meta:
         db_table = 'entries_thumbs'
+
+
+class EntryInfo(BaseModel):
+    assoc = models.OneToOneField(Entry, related_name='info')
+    info = fields.JSONField(default=None)
+
+    class Meta:
+        db_table = 'entries_infos'
