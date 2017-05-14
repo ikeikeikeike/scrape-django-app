@@ -23,9 +23,14 @@ class Video(base.ExtractBase):
         return []
 
     def embed_codes(self):
-        sel = '.player'
+        sel, sele = '.player', 'object,iframe'
 
         codes = []
         for doc in self.doc(sel).items():
-            codes.append(doc.html())
+            d = doc(sele)
+            d.remove_attr('id')
+            d.children().remove_attr('id')
+
+            codes.append(str(d))
+
         return codes
